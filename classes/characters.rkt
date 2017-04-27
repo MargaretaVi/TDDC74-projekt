@@ -2,6 +2,7 @@
 (define character%
   (class object%
     (init-field
+     _name
      [_health 10]
      [_x-pos 0]
      [_y-pos 0]
@@ -9,6 +10,10 @@
      ;; _radius ?? 
      
      )
+
+    (define/public (get-name)
+      _name)
+    
     (define/public (get-health)
       _health)
     
@@ -31,6 +36,12 @@
     ;; check if position is moveable, if it is
     ;; then set _x-pos to (+ _x-pos value)
     ;; else move-x (- value (/ value (abs value)))
+
+    (define/public (move-y value)
+      (if (= value 0)
+          (void)
+          (set! _y-pos (+ _y-pos value))))
+
           
     
 
