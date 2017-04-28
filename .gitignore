@@ -5,3 +5,7 @@
 *.scm~
 *.scm#*
 .#*.scm
+
+classes/*.rkt~ 
+.DS_Store
+.rkt~
