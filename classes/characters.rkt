@@ -6,21 +6,20 @@
 
     ;;Member of class character
     (init-field
-     _name
      [_health 10]
      [_x-pos 0]
      [_y-pos 0]
      [_speed 2] ;; how many pixels per update
      [_can-fire #t]
      [_cool-down 300]
-     [_facing-direction 1] ;; facing upwards
+     [_facing-direction 1];; facing upwards
+     [_DMG 5]
+     [_DMG-roof 40]
      ;; _radius ?? 
      )
 
     ;; Functions that returns the class members
-    (define/public (get-name)
-      _name)
-    
+
     (define/public (get-health)
       _health)
     
@@ -33,6 +32,11 @@
     (define/public (can-fire?)
       _can-fire)
 
+    (define/public (get-DMG)
+      _DMG)
+
+    (define/public (get-facing-direction)
+      _facing-direction)
     ;; ------------------------------------
 
     ;; Function takes a parameter "value"
@@ -46,19 +50,15 @@
     (define/public (increase-health _value)
       (set! _health (+ _health _value)))
 
-    ;; Function takes a parameter "value"
+    ;; Function takes a parameter "step"
     ;; and calculates a new x-pos for the character.
-    (define/public (move-x _value)
-      (if (= _value 0)
-          (void)
-          (set! _x-pos (+ _x-pos _value))))
+    (define/public (move-x _step)
+      (set! _x-pos (+ _x-pos _step)))
 
-    ;; Function takes a parameter "value"
+    ;; Function takes a parameter "step"
     ;; and calculates a new x-pos for the character.
-    (define/public (move-y _value)
-      (if (= _value 0)
-          (void)
-          (set! _y-pos (+ _y-pos _value))))
+    (define/public (move-y _step)
+      (set! _y-pos (+ _y-pos _step)))
 
     ;; Function sets the variable "can-fire" to true.
     (define/public (reset-can-fire)
@@ -76,6 +76,22 @@
            [notify-callback (reset-can-fire)]
            [interval _cool-down]
            [just-once? #t]))
+    ;; Type == 1 , DMG
+    ;; Type == 2 , SPEED
+    ;; Type == 3 ; HEALTH
+    ;; *power-up* is a object from class *power-up*
+    
+    (define/public (power-up *power-up*)
+      (cond
+        ((eq? (send *power-up* get-type) 1)
+         ;; There is a DMG roof
+         (if (> _DMG _DMG-roof)
+          (set! _DMG _DMG-roof)
+          (set! _DMG (+ _DMG (send *power-up* get-value )))))
+        ((eq? (send *power-up* get-type) 2)
+         (set! _speed (+ _speed (send *power-up* get-value )))) 
+        ((eq? (send *power-up* get-type) 3 )
+          (set! _health (+ _health (send *power-up* get-value ))))))
     
     (super-new)))
          
