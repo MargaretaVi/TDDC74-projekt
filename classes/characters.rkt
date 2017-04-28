@@ -1,10 +1,10 @@
-#lang racket
+#lang racket/gui
 (provide character%)
 
 (define character%
   (class object%
 
-    ;;Members of class character
+    ;;Member of class character
     (init-field
      _name
      [_health 10]
@@ -12,10 +12,12 @@
      [_y-pos 0]
      [_speed 2] ;; how many pixels per update
      [_can-fire #t]
+     [_cool-down 300]
+     [_facing-direction 1] ;; facing upwards
      ;; _radius ?? 
      )
 
-    ;; Functions that returns the class members.
+    ;; Functions that returns the class members
     (define/public (get-name)
       _name)
     
@@ -59,10 +61,22 @@
           (set! _y-pos (+ _y-pos _value))))
 
     ;; Function sets the variable "can-fire" to true.
-    (define (reset-can-fire)
+    (define/public (reset-can-fire)
       (set! _can-fire #t))
 
+    (define/public (fire)      
+      ;; Creates a projectile object
+      #|
+      (new projectile% ...
+|#
 
+      ;; To make sure that the player do not spam, a timer is used
+      (set! _can-fire #f)
+      (new timer%
+           [notify-callback (reset-can-fire)]
+           [interval _cool-down]
+           [just-once? #t]))
+    
     (super-new)))
          
        
