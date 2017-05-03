@@ -6,6 +6,6 @@
 *.scm#*
 .#*.scm
 
-classes/*.rkt~ 
+**/*.rkt~ 
 .DS_Store
 .rkt~
