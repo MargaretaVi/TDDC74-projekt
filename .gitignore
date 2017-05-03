@@ -5,7 +5,8 @@
 *.scm~
 *.scm#*
 .#*.scm
-
-**/*.rkt~ 
+ 
 .DS_Store
-.rkt~
+*.rkt~
+/compiled
+*/compiled
