@@ -1,4 +1,5 @@
 #lang racket
+(provide item%)
 
 (define item%
   (class object%
@@ -9,7 +10,7 @@
                 _type ; Which type of item (rnd number)
                 _scorevalue ;placeholder for requirement 2
                 _sound ;placeholder for requirement 2
-                _value) ; Value for the booster
+                _value) ; Value for the booster, how much to increase
     
     ;; Sets the x-pos to a specific value
     (define (set-x-pos pos)
@@ -45,14 +46,13 @@
     (define/public (random-from-to start stop)
       (+ (random (- stop (- start 1))) start))
 
-    ;Which type where randomed? Which value does this give?
-    (define/public (booster _type _value)
-      (set! _type (random-from-to))
-      (cond [(= _type 1) (= _value 1)]
-            [(= _type 2) (= _value 2)]
-            [(= _type 3) (= _value 3)]
+    ;Which type were randomed? Which value does this give?
+    (define/public (booster)
+      (set! _type (random-from-to 1 3))
+      (cond [(equal? _type 1) (equal? _value 1)]
+            [(equal? _type 2) (equal? _value 2)]
+            [(equal? _type 3) (equal? _value 3)]
             [else (void)]))
-  
     (super-new)))
 
 ;Class astroid, subclass to item%
