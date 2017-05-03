@@ -4,6 +4,8 @@
   (class object%
     (init-field _x-pos
                 _y-pos
+                _height
+                _width
                 _type ; Which type of item (rnd number)
                 _scorevalue ;placeholder for requirement 2
                 _sound ;placeholder for requirement 2

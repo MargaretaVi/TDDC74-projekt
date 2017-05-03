@@ -6,6 +6,8 @@
 
     ;;Member of class character
     (init-field
+     _height
+     _width
      [_health 10]
      [_x-pos 0]
      [_y-pos 0]
@@ -81,17 +83,17 @@
     ;; Type == 3 ; HEALTH
     ;; *power-up* is a object from class *power-up*
     
-    (define/public (power-up *power-up*)
+    (define/public (power-up power-up)
       (cond
-        ((eq? (send *power-up* get-type) 1)
+        ((eq? (send power-up get-type) 1)
          ;; There is a DMG roof
          (if (> _DMG _DMG-roof)
           (set! _DMG _DMG-roof)
-          (set! _DMG (+ _DMG (send *power-up* get-value )))))
-        ((eq? (send *power-up* get-type) 2)
-         (set! _speed (+ _speed (send *power-up* get-value )))) 
-        ((eq? (send *power-up* get-type) 3 )
-          (set! _health (+ _health (send *power-up* get-value ))))))
+          (set! _DMG (+ _DMG (send power-up get-value )))))
+        ((eq? (send power-up get-type) 2)
+         (set! _speed (+ _speed (send power-up get-value )))) 
+        ((eq? (send power-up get-type) 3 )
+          (set! _health (+ _health (send power-up get-value ))))))
     
     (super-new)))
          
