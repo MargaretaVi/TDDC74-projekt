@@ -9,20 +9,38 @@
                 _type ; Which type of item (rnd number)
                 _scorevalue ;placeholder for requirement 2
                 _sound ;placeholder for requirement 2
-                _value) ; Value for the booster 
+                _value) ; Value for the booster
     
-    ;Item moves only in y-direction. X-position presented for consistency. 
-    (define/public (move-y step)
-      (set! _y-pos (+ _y-pos step)))
-    (define/public (move-x step)
-      (set! _x-pos _x-pos))
-                   
+    ;; Sets the x-pos to a specific value
+    (define (set-x-pos pos)
+      (set! _x-pos pos))
+
+    ;; Sets the y-pos to a specific value
+    (define (set-y-pos pos)
+      (set! _y-pos pos))
+
+    ;; Moves the item in the x-direction
+    (define/public (move-x _step)
+      (set-x-pos (+ _x-pos _step)))
+
+    ;; Moves the item in the y-direction
+    (define/public (move-y _step)
+      (set-y-pos (+ _y-pos _step)))
+    
     ;Get current x- and y-coordinates
     (define/public (get-x-pos)
       _x-pos)
+    
     (define/public (get-y-pos)
       _y-pos)
-
+    
+    ;Get width of item
+    (define/public (get-width)
+      _width)
+    
+    ;get height of item
+    (define/public (get-height)
+      _height)
     ;Random number between 1 and 3 to decide type      
     (define/public (random-from-to start stop)
       (+ (random (- stop (- start 1))) start))
@@ -60,7 +78,9 @@
 (define test (new astroid%
      [_x-pos 0]
      [_y-pos 0]
-     [type 0]
-     [scorevalue 0]
-     [sound 0]
-     [_type 0]))
+     [_type 0]
+     [_scorevalue 0]
+     [_sound 0]
+     [_height 20]
+     [_width 20]
+     [_value 0]))

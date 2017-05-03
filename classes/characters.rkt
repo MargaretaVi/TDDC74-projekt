@@ -39,30 +39,39 @@
 
     (define/public (get-facing-direction)
       _facing-direction)
+
+    (define/public (get-width)
+      _width)
+
+    (define/public (get-height)
+      _height)
     ;; ------------------------------------
 
-    ;; Function takes a parameter "value"
-    ;; calculates the new health for the character.
+    ;; Sets the x-pos to a specific value
+    (define (set-x-pos pos)
+      (set! _x-pos pos))
+
+    ;; Sets the y-pos to a specific value
+    (define (set-y-pos pos)
+      (set! _y-pos pos))
+      
+    ;; Calculates the new health for the character. (decreasing)
     (define/public (decrease-health _value)
      (set! _health (- _health _value)))
 
-
-    ;; Function takes a parameter "value"
-    ;; calculates the new health for the character.
+    ;; Calculates the new health for the character. (increasing)
     (define/public (increase-health _value)
       (set! _health (+ _health _value)))
 
-    ;; Function takes a parameter "step"
-    ;; and calculates a new x-pos for the character.
+    ;; Moves the character in the x-direction
     (define/public (move-x _step)
-      (set! _x-pos (+ _x-pos _step)))
+      (set-x-pos (+ _x-pos _step)))
 
-    ;; Function takes a parameter "step"
-    ;; and calculates a new x-pos for the character.
+    ;; Moves the character in the y-direction
     (define/public (move-y _step)
-      (set! _y-pos (+ _y-pos _step)))
+      (set-y-pos (+ _y-pos _step)))
 
-    ;; Function sets the variable "can-fire" to true.
+    ;; Sets the variable "can-fire" to true.
     (define/public (reset-can-fire)
       (set! _can-fire #t))
 
