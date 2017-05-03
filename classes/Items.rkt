@@ -1,23 +1,37 @@
 #lang racket
-(provide item%)
+(provide item% astroid% projectile%)
 
 (define item%
   (class object%
     (init-field _x-pos
                 _y-pos
-                _height
-                _width
                 _type ; Which type of item (rnd number)
-                _scorevalue ;placeholder for requirement 2
-                _sound ;placeholder for requirement 2
-                _value) ; Value for the booster, how much to increase
+                [_value 0] ; Value for the booster, how much to increase
+                [_height 10]
+                [_width 10]
+                [_scorevalue 0];placeholder for requirement 2
+                [_sound 0]) ;placeholder for requirement 2
+
+    #|
+_type:
+1 - 3 booster
+4-5 projectile (4 default, 5 better)
+
+|#
+        
+    ;Get current x- and y-coordinates
+    (define/public (get-x-pos)
+      _x-pos)
+    
+    (define/public (get-y-pos)
+      _y-pos)
     
     ;; Sets the x-pos to a specific value
-    (define (set-x-pos pos)
+    (define/public (set-x-pos pos)
       (set! _x-pos pos))
 
     ;; Sets the y-pos to a specific value
-    (define (set-y-pos pos)
+    (define/public (set-y-pos pos)
       (set! _y-pos pos))
 
     ;; Moves the item in the x-direction
@@ -27,31 +41,41 @@
     ;; Moves the item in the y-direction
     (define/public (move-y _step)
       (set-y-pos (+ _y-pos _step)))
-    
-    ;Get current x- and y-coordinates
-    (define/public (get-x-pos)
-      _x-pos)
-    
-    (define/public (get-y-pos)
-      _y-pos)
-    
+
     ;Get width of item
     (define/public (get-width)
       _width)
     
+    ; set width
+    (define/public (set-width value)
+      (set! _width value))
+    
     ;get height of item
     (define/public (get-height)
       _height)
+
+    ; set width
+    (define/public (set-height num)
+      (set! _height num))
+    
+    ; set type
+    (define/public (set-type num)
+      (set! _type num))
+
+    ; set value
+    (define/public (set-value num)
+      (set! _value num))
+    
     ;Random number between 1 and 3 to decide type      
     (define/public (random-from-to start stop)
       (+ (random (- stop (- start 1))) start))
 
     ;Which type were randomed? Which value does this give?
     (define/public (booster)
-      (set! _type (random-from-to 1 3))
-      (cond [(equal? _type 1) (equal? _value 1)]
-            [(equal? _type 2) (equal? _value 2)]
-            [(equal? _type 3) (equal? _value 3)]
+      (set-type (random-from-to 1 3))
+      (cond [(equal? _type 1) (set-value 1)]
+            [(equal? _type 2) (set-value 2)]
+            [(equal? _type 3) (set-value 3)]
             [else (void)]))
     (super-new)))
 
@@ -71,16 +95,16 @@
   (class item%
     (init-field _facing-direction
                 damage)
-    (inherit move-y)))
+    (inherit move-y
+             set-x-pos
+             set-y-pos
+             set-width
+             set-height
+             set-value)
+
+    (set-height 25)
+    (set-width 15)
+    (set-value 1)
+    (super-new)))
 
 ; GLÖM FÖR FAN INTE REQUIRE/PROVIDE OM DU BEHÖVER DET !!!
-
-(define test (new astroid%
-     [_x-pos 0]
-     [_y-pos 0]
-     [_type 0]
-     [_scorevalue 0]
-     [_sound 0]
-     [_height 20]
-     [_width 20]
-     [_value 0]))

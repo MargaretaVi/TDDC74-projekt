@@ -1,13 +1,14 @@
 #lang racket/gui
 (provide character%)
+(require "Items.rkt")
 
 (define character%
   (class object%
 
     ;;Member of class character
     (init-field
-     _height
-     _width
+     _height ; y-axis
+     _width ; x-axis
      [_health 10]
      [_x-pos 0] ;; states the upper left corner
      [_y-pos 0] ;; states the upper left corner
@@ -76,9 +77,14 @@
 
     (define/public (fire)      
       ;; Creates a projectile object
-      #|
-      (new projectile% ...
-|#
+      (let ((type_tmp 0))
+        (if (> _DMG 5)
+            (set! type_tmp 5)
+            (set! type_tmp 4))
+        (new projectile%
+             [_x-pos (+ (send this get-x-pos) (send this get-width) 2)]
+             [_y-pos (+ (send this get-y-pos) (send this get-height) 2)]
+             [_type type_tmp]))
 
       ;; To make sure that the player do not spam, a timer is used
       (set! _can-fire #f)
