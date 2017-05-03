@@ -8,7 +8,8 @@
      _name
      [_width 1000]
      [_height 1000]
-     [*list-of-characters* (make-hash)])
+     [_list-of-characters (make-hash)]
+     [_list-of-items (make-hash)])
 
     ;; Functions that returns the class members
     (define/public (get-name)
@@ -22,23 +23,28 @@
     
     ;; ------------------------------------
 
-    ;; Fucntion returns a list of which characters that exists in the game.
+    ;; Returns a list of which characters that exists in the game.
     (define/public (get-list-of-charcters)
-      (hash-keys *list-of-characters*))
+      (hash-keys _list-of-characters))
 
-    ;; Functions adds character to the hash-table which characters.
+    ;; Adds character to the hash-table with characters.
     (define/public (add-character character)
-      (if (hash-has-key? *list-of-characters* (send character get-name))
-          #f
-          (begin
-            (hash-set! *list-of-characters* (send character get-name) character)
-            #t)))
+      (hash-set! _list-of-characters (send character get-name) character))
     
-    ;; Fucntion removes the character from the hash-table with characters.
+    ;; Removes the character from the hash-table with characters.
     (define/public (delete-character character)
-      (if (hash-has-key? *list-of-characters*  (send character get-name))
-          (hash-remove! *list-of-characters* (send character get-name))
-          #f))
+      (hash-remove! _list-of-characters (send character get-name)))
 
+    ;; Returns a list of existing items on the map
+    (define/public (get-list-of-items)
+      (hash-keys _list-of-items))
+    
+    ;; Adds item to the hash-table with items
+    (define/public (add-item item)
+      (hash-set! _list-of-items (send item get-name) item))
 
+    ;; Removes the item from the hash-table with items.
+    (define/public (delete-item item)
+      (hash-remove! _list-of-items (send item get-name)))
+    
     (super-new)))
