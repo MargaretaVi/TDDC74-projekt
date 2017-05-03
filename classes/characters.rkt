@@ -9,15 +9,14 @@
      _height
      _width
      [_health 10]
-     [_x-pos 0]
-     [_y-pos 0]
+     [_x-pos 0] ;; states the upper left corner
+     [_y-pos 0] ;; states the upper left corner
      [_speed 2] ;; how many pixels per update
      [_can-fire #t]
      [_cool-down 300]
      [_facing-direction 1];; facing upwards
      [_DMG 5]
      [_DMG-roof 40]
-     ;; _radius ?? 
      )
 
     ;; Functions that returns the class members

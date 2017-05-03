@@ -9,6 +9,9 @@
      _y-pos
      _cool-down
      _facing-direction)
+    (init-field
+     [_scorevalue 0])
+     
     ;; This is the opposite direction from how the player moves.
     ;;Reasonable since enemies moves down and player moves up
     (set! _facing-direction 0)

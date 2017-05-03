@@ -6,6 +6,7 @@
     ;;Members of class character
     (init-field
      _name
+     [_score 0]
      [_width 1000]
      [_height 1000]
      [_list-of-characters (make-hash)]
@@ -20,9 +21,15 @@
 
     (define/public (get-height)
       _height)
-    
+
+    (define/public (get-score)
+      _score)
     ;; ------------------------------------
 
+    ;; Increases scorevalue
+    (define/public (increase-score _scorevalue)
+      (set! _score (+ _score _scorevalue)))
+    
     ;; Returns a list of which characters that exists in the game.
     (define/public (get-list-of-charcters)
       (hash-keys _list-of-characters))
