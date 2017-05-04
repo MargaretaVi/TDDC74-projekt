@@ -14,7 +14,7 @@
      [_y-pos 0] ;; states the upper left corner
      [_speed 2] ;; how many pixels per update
      [_can-fire #t]
-     [_cool-down 300]
+     [_cool-down 600]
      [_facing-direction 1];; facing upwards
      [_DMG 5]
      [_DMG-roof 40]
@@ -84,20 +84,8 @@
         (new projectile%
              [_x-pos (+ (send this get-x-pos) (send this get-width) 2)]
              [_y-pos (+ (send this get-y-pos) (send this get-height) 2)]
-             [_type type_tmp]))
-
-      ;; To make sure that the player do not spam, a timer is used
-      (set! _can-fire #f)
-      (new timer%
-           [notify-callback (reset-can-fire)]
-           [interval _cool-down]
-           [just-once? #t]))
-  
-    
+             [_type type_tmp]
+             [_facing-direction _facing-direction]
+             [_DMG _DMG])))
+ 
     (super-new)))
-         
-       
-         
-
-    
-    

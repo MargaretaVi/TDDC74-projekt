@@ -9,6 +9,9 @@
      _y-pos
      _cool-down
      _facing-direction)
+    (inherit
+      fire)
+    
     (init-field
      [_scorevalue 0])
      
@@ -27,5 +30,5 @@
     ;; Randomizer that gives a value between an intervall
     (define/public (random-from-to start stop)
       (+ (random (- stop (- start 1))) start))
-    
+
     (super-new)))

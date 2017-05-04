@@ -1,5 +1,7 @@
 #lang racket
-(provide collision?)
+(provide (all-defined-out))
+
+;; checks if two bounding obxes from two objecs collides 
 (define (collision? object1 object2)
   (let ((x1-pos (send object1 get-x-pos)) (y1-pos (send object1 get-y-pos))
         (width1 (send object1 get-width)) (height1 (send object1 get-height))
@@ -19,3 +21,13 @@ if (rect1.x < rect2.x + rect2.width &&
     // collision detected!
 }
 |#
+;; Removes the first occurance of an element from list
+(define (delete-from-list lst elem)
+  (remove elem lst))
+
+;; Add an element to the back of the list
+(define (add-to-list lst elem)
+    (if (null? lst)
+        (cons elem lst)
+        (cons (car lst) (add-to-list elem (cdr lst)))))
+  

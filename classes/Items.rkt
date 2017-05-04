@@ -93,8 +93,9 @@ _type:
 ;Class projectile, subclass to item
 (define projectile%
   (class item%
-    (init-field _facing-direction
-                damage)
+    (inherit-field
+     _height)
+    
     (inherit move-y
              set-x-pos
              set-y-pos
@@ -102,9 +103,12 @@ _type:
              set-height
              set-value)
 
+    (init-field _facing-direction
+                _DMG)
+
+    (super-new)
     (set-height 25)
     (set-width 15)
-    (set-value 1)
-    (super-new)))
+    (set-value 1)))
 
 ; GLÖM FÖR FAN INTE REQUIRE/PROVIDE OM DU BEHÖVER DET !!!
