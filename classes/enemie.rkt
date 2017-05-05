@@ -23,9 +23,9 @@
     (set! _cool-down 600)
     
     ;; Creates a random spawn point for the enemie, 
-    (define/public (random-spawn-pos *game-board*)
-      (set! _x-pos (random-from-to 0 (send *game-board* get-width)))
-      (set! _y-pos (random-from-to 0 (exact-round (* (send *game-board* get-height) 0.01)))))
+    (define/public (random-spawn-pos game-board)
+      (set! _x-pos (random-from-to 0 (send game-board get-width)))
+      (set! _y-pos (random-from-to 0 (exact-round (* (send game-board get-height) 0.01)))))
 
     ;; Randomizer that gives a value between an intervall
     (define/public (random-from-to start stop)
