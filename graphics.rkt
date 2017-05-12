@@ -65,29 +65,20 @@
       (key-fnc key-event))
     ;; -----
     (super-new)))
-      
-
-;;init game canvas
-;(define *canvas* (new game-canvas%
-;                      [parent *game-window*]
-;                      ;;--- comment out when fixed keyboard handler
-;                      [keyboard-handler key-fnc]
-;                      [paint-callback render-function]))
 
 ;;Return the canvas
 (define (get-game-canvas *canvas*)
   *canvas*) 
-#|
+
 
 ;;Uppdate canvas
-(define (refresh-canvas *canvas*)
+(define (refresh-canvas)
   (send *canvas* refresh))
 
 ;;Timer which says when the canvas should update
 (define *update-timer* (new timer%
                             [notify-callback refresh-canvas]))
+                            ;[interval 16]
+                            ;[just-once? #f]))
+(send *update-timer* start 16 #f)
 
-
-                            [interval 16]
-                            [just-once? #f]))
-|#
