@@ -1,5 +1,4 @@
 #lang racket/gui
-(require "classes/keyboard-handler.rkt")
 (provide *game-window* *update-timer*)
 
 (define *game-window* (new frame%
@@ -17,11 +16,15 @@
   ;Draws out the map 
   (draw-object (send *canvas* get-map) dc)
 
-  ;;Draw characters (player & enemies) 
+  ;;Draw player  
   (for-each (lambda (player)
-              (send player update)
               (draw-object player dc))
-            (send *canvas* get-list-of-character))
+            (send *canvas* get-list-of-player))
+
+  ;;Draw enemies
+  (for-each (lambda (enemie)
+              (draw-object enemie dc))
+            (send *canvas* get-list-of-enemies))
 
   ;;Draw projectiles
   (for-each (lambda (object)
@@ -33,7 +36,15 @@
   (for-each (lambda (object)
               (send object update)
               (draw-object object dc))
-            (send *canvas* get-list-of-power-ups)))
+            (send *canvas* get-list-of-power-ups))
+
+  (for-each (lambda (asteroid)
+              (send asteroid update)
+              (draw-object asteroid dc)
+              (send *canvas* get-list-of-asteroids))))
+
+
+
   
 ;; canvas for the game
 (define game-canvas%
@@ -64,7 +75,7 @@
 
 ;;Timer which says when the canvas should update
 (define *update-timer* (new timer%
-                            [notify-callback refresh-canvas]))
-
-(send *update-timer* start 16)
+                            [notify-callback refresh-canvas]
+                            [interval 16]
+                            [just-once? #f]))
 

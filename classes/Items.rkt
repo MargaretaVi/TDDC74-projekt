@@ -3,14 +3,15 @@
 
 (define item%
   (class object%
-    (init-field _x-pos
-                _y-pos
-                _type ; Which type of item (rnd number)
-                [_value 0] ; Value for the booster, how much to increase
-                [_height 10]
-                [_width 10]
-                [_scorevalue 0];placeholder for requirement 2
-                [_sound 0]) ;placeholder for requirement 2
+    (init-field
+     _height
+     _width
+     _type ; Which type of item (rnd number)
+     [_x-pos 0]
+     [_y-pos 0] 
+     [_value 0] ; Value for the booster, how much to increase
+     [_scorevalue 0];placeholder for requirement 2
+     [_sound 0]) ;placeholder for requirement 2
 
     #|
 _type:
@@ -77,38 +78,41 @@ _type:
             [(equal? _type 2) (set-value 2)]
             [(equal? _type 3) (set-value 3)]
             [else (void)]))
-    (super-new)))
+    ;;--------- CHANGE THE BITMAP TO THE CORRECT ONE    
+    ;; health-power-up bitmap
+    (define *health-bitmap* (make-object bitmap% "../images/health-img.png"))
+    
+    ;; DMG-power-up bitmap
+    (define *DMG-bitmap* (make-object bitmap% "../images/dmg.png"))
+    
+    ;; speed-power-up bitmap
+    (define *speed-bitmap* (make-object bitmap% "../images/speed.png"))
+    
+    ;; asteroid bitmap
+    ;(define *asteroid-bitmap* (make-object bitmap% "../images/player-bit.png"))
 
-;Class astroid, subclass to item%
-(define astroid%
-  (class item%
-    (inherit move-y)
-    ;Astroid moves twice as fast as item (given step above is 1)
-    (define/public (faster-move)
-      (move-y 2))
-    (inherit get-x-pos)
-    (inherit get-y-pos)
+    ;; projectile bitmap
+    (define *projectile-bitmap* (make-object bitmap% "../images/player-bit.png"))
     (super-new)))
 
 ;Class projectile, subclass to item
 (define projectile%
   (class item%
+    (super-new)
     (inherit-field
-     _height)
-    
+     _height)  
     (inherit move-y
              set-x-pos
              set-y-pos
              set-width
              set-height
              set-value)
-
+    (set-height 25)
+    (set-width 15)
+    (set-value 1)
     (init-field _facing-direction
                 _DMG)
 
-    (super-new)
-    (set-height 25)
-    (set-width 15)
-    (set-value 1)))
-
-; GLÖM FÖR FAN INTE REQUIRE/PROVIDE OM DU BEHÖVER DET !!!
+    ))
+      
+      

@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/gui
 (provide enemie%)
 (require "characters.rkt")
 
@@ -10,8 +10,8 @@
      _cool-down
      _facing-direction)
     (inherit
-      fire)
-    
+      fire
+      move-y)
     (init-field
      [_scorevalue 0])
      
@@ -31,4 +31,17 @@
     (define/public (random-from-to start stop)
       (+ (random (- stop (- start 1))) start))
 
+    ;;Move function for enemies that is "automatic" enemies moves "step"-step in the vertical direction
+    ;;after interval-time
+    (define/public (move step inverval)
+      (new timer%
+           [notify-callback (move-y step)]
+           [interval 1000]
+           [just-once? #f]))
+ 
+    ;; Enemie bitmap
+    (define *enemie-bitmap*
+      (make-object bitmap% "../images/player-bit.png"))
+   
     (super-new)))
+

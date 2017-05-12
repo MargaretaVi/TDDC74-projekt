@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/gui
 (provide player%)
 (require "characters.rkt")
 (require "../functions.rkt")
@@ -6,6 +6,8 @@
 (define player%
   (class character%
     (inherit-field
+     _x-pos
+     _y-pos
      _DMG
      _DMG-roof
      _speed
@@ -29,7 +31,8 @@
     ;; Type == 2 , SPEED
     ;; Type == 3 ; HEALTH
     ;; *power-up* is a object from class *power-up*
-    
+
+    ;; Function that decides what happens when a power up is picked up
     (define/public (power-up power-up)
       (cond
         ((eq? (send power-up get-type) 1)
@@ -39,11 +42,14 @@
           (set! _DMG (+ _DMG (send power-up get-value )))))
         ((eq? (send power-up get-type) 2)
          (set! _speed (+ _speed (send power-up get-value )))) 
-        ((eq? (send power-up get-type) 3 )
-          (set! _health (+ _health (send power-up get-value ))))))
+        ((eq? (send power-up get-type) 3)
+         (set! _health (+ _health (send power-up get-value ))))))
 
+          
+    ;; players bitmap
+    (define *player-bitmap* (make-object bitmap% "../images/player-bit.png"))
+   
     (super-new)))
      
-      
-    
+  
     

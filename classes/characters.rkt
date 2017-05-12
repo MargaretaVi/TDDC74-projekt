@@ -1,4 +1,4 @@
-#lang racket/gui
+#lang racket
 (provide character%)
 (require "Items.rkt")
 
@@ -45,6 +45,7 @@
 
     (define/public (get-height)
       _height)
+    
     ;; ------------------------------------
 
     ;; Sets the x-pos to a specific value
@@ -87,5 +88,10 @@
              [_type type_tmp]
              [_facing-direction _facing-direction]
              [_DMG _DMG])))
+
+    ;;update function
+    (define/public (update)
+      (void))
+      
  
     (super-new)))
