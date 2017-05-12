@@ -7,20 +7,18 @@
   (class object%
     ;;Members of class character
     (init-field
-     _name
      _width
      _height
      _num-of-power-ups
      [_score 0]
-     [_list-of-characters '()]
-     [_list-of-power-ups '()]
-     [_list-of-asteroids '()]
-     [_list-of-projectiles '()]
+     [*list-of-player* '()]
+     [*list-of-enemies* '()]
+     [*list-of-power-ups* '()]
+     [*list-of-asteroids* '()]
+     [*list-of-projectiles* '()]
      [_paused #f])
 
     ;; Functions that returns the class members
-    (define/public (get-name)
-      _name)
     
     (define/public (get-width)
       _width)
@@ -36,42 +34,66 @@
     (define/public (increase-score _scorevalue)
       (set! _score (+ _score _scorevalue)))
     
-    ;; Returns a list of which characters that exists in the game.
-    (define/public (get-list-of-charcters)
-      _list-of-characters)
+    ;; Returns a list of which player that exists in the game. (should only be 1)
+    (define/public (get-list-of-player)
+      *list-of-player*)
 
-    ;; Adds character to the list with characters.
-    (define/public (add-character character)
-      (add-to-list _list-of-characters character))
+    ;; Adds player to the list with player.
+    (define/public (add-player player)
+      (add-to-list *list-of-player* player))
     
-    ;; Removes the character from the list with characters.
-    (define/public (delete-character character)
-      (delete-from-list _list-of-characters character))
+    ;; Removes player from the list with player.
+    (define/public (delete-player player)
+      (delete-from-list *list-of-player* player))
+
+    ;; Returns a list of which enemies that exists in the game.
+    (define/public (get-list-of-enemies)
+      *list-of-enemies*)
+
+    ;; Adds character to the list with enemies.
+    (define/public (add-enemie enemie)
+      (add-to-list *list-of-enemies* enemie))
+    
+    ;; Removes the enemies from the list with enemies.
+    (define/public (delete-enemie enemie)
+      (delete-from-list *list-of-enemies* enemie))
 
     ;; Returns a list of existing items on the map
     (define/public (get-list-of-power-ups)
-      _list-of-power-ups)
+      *list-of-power-ups*)
     
     ;; Adds item to the list with power-ups
     (define/public (add-power-up power-up)
-      (add-to-list _list-of-power-ups power-up))
+      (add-to-list *list-of-power-ups* power-up))
 
     ;; Removes the item from the list with items.
     (define/public (delete-power-up power-up)
-      (delete-from-list _list-of-power-ups power-up))
+      (delete-from-list *list-of-power-ups* power-up))
 
     ;; Returns a list of existing projectiles on the map
     (define/public (get-list-of-projectiles)
-      _list-of-projectiles)
+      *list-of-projectiles*)
     
-    ;; Adds item to the list with power-ups
+    ;; Adds item to the list with projectiles
     (define/public (add-projectile projectile)
-      (add-to-list _list-of-projectiles projectile))
+      (add-to-list *list-of-projectiles* projectile))
 
-    ;; Removes the item from the list with items.
+    ;; Removes the projectile from the list with projectiles.
     (define/public (delete-projectile projectile)
-      (delete-from-list _list-of-projectiles projectile))
+      (delete-from-list *list-of-projectiles* projectile))
 
+    ;; Returns a list of existing asteroids on the map
+    (define/public (get-list-of-asteroids)
+      *list-of-asteroids*)
+    
+    ;; Adds item to the list with projectiles
+    (define/public (add-asteroid asteroid)
+      (add-to-list *list-of-asteroids* asteroid))
+
+    ;; Removes the projectile from the list with projectiles.
+    (define/public (delete-asteroid asteroid)
+      (delete-from-list *list-of-asteroids* asteroid))
+    
     ;; ----------------
     (define *pause-window* (new dialog%
                                 [parent *game-window*]
