@@ -11,7 +11,9 @@
      [_y-pos 0] 
      [_value 0] ; Value for the booster, how much to increase
      [_scorevalue 0];placeholder for requirement 2
-     [_sound 0]) ;placeholder for requirement 2
+     [_sound 0]
+     [_speed 1]
+     [_facing-direction 1])
 
     #|
 _type:
@@ -29,21 +31,14 @@ Type == 3 ; HEALTH
     (define/public (get-y-pos)
       _y-pos)
     
-    ;; Sets the x-pos to a specific value
-    (define/public (set-x-pos pos)
-      (set! _x-pos pos))
-
-    ;; Sets the y-pos to a specific value
-    (define/public (set-y-pos pos)
-      (set! _y-pos pos))
 
     ;; Moves the item in the x-direction
-    (define/public (move-x _step)
-      (set-x-pos (+ _x-pos _step)))
+    (define/public (move-x _speed)
+      (set! _x-pos (+ _x-pos (* _facing-direction _speed))))
 
     ;; Moves the item in the y-direction
-    (define/public (move-y _step)
-      (set-y-pos (+ _y-pos _step)))
+    (define/public (move-y _speed)
+      (set! _y-pos (+ _y-pos (* _facing-direction _speed))))
 
     ;Get width of item
     (define/public (get-width)
@@ -90,6 +85,7 @@ Type == 3 ; HEALTH
     ;; speed-power-up bitmap
     (define speed-bitmap (make-object bitmap% "../images/speed.png"))
 
+    ;; Returns the correct bitmap
     (define/public (get-bitmap)
       (cond
         ((equal? (send this get-type) 1)
@@ -98,7 +94,16 @@ Type == 3 ; HEALTH
          speed-bitmap)
         ((equal? (send this get-type) 3)
          health-bitmap)))
-    
+
+    ;;Get speed
+
+    (define/public (get-speed)
+      _speed)
+
+    (define/public (update)
+      (move-x 0)
+      (move-y _speed))
+      
     (super-new)))
 
 ;Class projectile, subclass to item
@@ -108,17 +113,14 @@ Type == 3 ; HEALTH
     (inherit-field
      _height)  
     (inherit
-      ;move-y
-             set-x-pos
-             set-y-pos
-             set-width
-             set-height
-             set-value)
+      set-width
+      set-height
+      set-value)
     (set-height 25)
     (set-width 15)
     (set-value 1)
-    (init-field _facing-direction
-                _DMG)
+    (init-field
+     _DMG)
 
     ;; projectile bitmap
     (define projectile-bitmap
@@ -126,5 +128,4 @@ Type == 3 ; HEALTH
 
     (define/override (get-bitmap)
       projectile-bitmap))) 
-      
       

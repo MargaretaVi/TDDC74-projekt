@@ -13,7 +13,7 @@
      [_speed 10] ;; how many pixels per update
      [_can-fire #t]
      [_cool-down 600]
-     [_facing-direction 1];; facing upwards
+     [_facing-direction 1];; facing downwards
      [_DMG 5]
      [_DMG-roof 40]
      )
@@ -75,24 +75,14 @@
     ;; Sets the variable "can-fire" to true.
     (define/public (reset-can-fire)
       (set! _can-fire #t))
-
-    #|
-    (define/public (fire game-board)      
-      ;; Creates a projectile object
-      (let ((type_tmp 0))
-        (if (> _DMG 5)
-            (set! type_tmp 5)
-            (set! type_tmp 4))
-        (new projectile%
-             [_height 11]
-             [_width 11]
-             [_x-pos (+ (send this get-x-pos) (send this get-width) 2)]
-             [_y-pos (+ (send this get-y-pos) (send this get-height) 2)]
-             [_type type_tmp]
-             [_facing-direction _facing-direction]
-             [_DMG _DMG]))))
-|#
+    
+    ;; Placeholder for returning the specific bitmap
     (define/public (get-bitmap)
       (void))
+
+    ;; Update position of character
+    (define/public (update)
+      (move-x 0)
+      (move-y _speed))
     
     (super-new)))

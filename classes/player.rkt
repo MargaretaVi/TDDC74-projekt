@@ -4,6 +4,7 @@
 
 (define player%
   (class character%
+    (super-new)
     (inherit-field
      _x-pos
      _y-pos
@@ -11,13 +12,14 @@
      _DMG-roof
      _speed
      _health
-     _can-fire)
+     _can-fire
+     _facing-direction)
     (inherit move-x
              move-y)
     (init-field
      [_list-of-power-ups '()])
    
-    
+    (set! _facing-direction -1)
      ;; Returns a list of power ups that the character currently holds
      (define/public (get-list-of-power-ups)
        _list-of-power-ups)
@@ -51,7 +53,7 @@
     (define/override (get-bitmap)
       player-bitmap)
   
-    (super-new)))
+  ))
      
 (define player
   (new player%

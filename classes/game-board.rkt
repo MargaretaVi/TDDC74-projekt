@@ -158,26 +158,20 @@
 
 ;; Render function
     (define (render-function canvas dc)
-     ;;Draw projectiles
-      (for-each (lambda (object)
-                  (send canvas draw-object object dc))
-                (send game-board get-list-of-projectiles))
-
-     ;;Draw player
+      ;;Draw player
       (for-each (lambda (player)
                   (send canvas draw-object player dc))
-                (send game-board get-list-of-player)))
-
-
-   #|    ;;Draw projectiles
+                (send game-board get-list-of-player))
+     ;;Draw projectiles
       (for-each (lambda (object)
+                  (send object update)
                   (send canvas draw-object object dc))
-     (send game-board get-list-of-projectiles)))
-   |#        
-#|
+                (send game-board get-list-of-projectiles)))
 
+#|
       ;;Draw enemies
       (for-each (lambda (enemie)
+                  (send object update)
                    (send canvas draw-object enemie dc))
                 (send game-board get-list-of-enemies))
 
@@ -252,20 +246,6 @@
                            
 (send update-timer start 16 #f)
 
-;; ------- REMOVE WHEN WORKING!
 (send game-board add-player player)
 
-
-(define proj (let ((type_tmp 0))
-               (if (> (send player get-DMG) 5)
-                   (set! type_tmp 5)
-                   (set! type_tmp 4))
-               (new projectile%
-                    [_height 11]
-                    [_width 11]
-                    [_x-pos (+ (send player get-x-pos) (send player get-width) 2)]
-                    [_y-pos (- (send player get-y-pos) (send player get-height) 2)]
-                    [_type type_tmp]
-                    [_facing-direction (send player get-facing-direction)]
-                    [_DMG (send player get-DMG)])))
-(send game-board add-projectile proj)
+;; ------- REMOVE WHEN WORKING!
