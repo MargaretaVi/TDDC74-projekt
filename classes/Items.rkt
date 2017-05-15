@@ -15,7 +15,9 @@
 
     #|
 _type:
-1 - 3 booster
+Type == 1 , DMG
+Type == 2 , SPEED
+Type == 3 ; HEALTH
 4-5 projectile (4 default, 5 better)
 
 |#
@@ -80,16 +82,23 @@ _type:
             [else (void)]))
 
     ;; health-power-up bitmap
-    (define *health-bitmap* (make-object bitmap% "../images/health-img.png"))
+    (define health-bitmap (make-object bitmap% "../images/health-img.png"))
     
     ;; DMG-power-up bitmap
-    (define *DMG-bitmap* (make-object bitmap% "../images/dmg.png"))
+    (define DMG-bitmap (make-object bitmap% "../images/dmg.png"))
     
     ;; speed-power-up bitmap
-    (define *speed-bitmap* (make-object bitmap% "../images/speed.png"))
+    (define speed-bitmap (make-object bitmap% "../images/speed.png"))
 
-    ;; projectile bitmap
-    (define *projectile-bitmap* (make-object bitmap% "../images/player-bit.png"))
+    (define/public (get-bitmap)
+      (cond
+        ((equal? (send this get-type) 1)
+         DMG-bitmap)
+        ((equal? (send this get-type) 2)
+         speed-bitmap)
+        ((equal? (send this get-type) 3)
+         health-bitmap)))
+    
     (super-new)))
 
 ;Class projectile, subclass to item
@@ -98,7 +107,8 @@ _type:
     (super-new)
     (inherit-field
      _height)  
-    (inherit move-y
+    (inherit
+      ;move-y
              set-x-pos
              set-y-pos
              set-width
@@ -108,6 +118,13 @@ _type:
     (set-width 15)
     (set-value 1)
     (init-field _facing-direction
-                _DMG)))
+                _DMG)
+
+    ;; projectile bitmap
+    (define projectile-bitmap
+      (make-object bitmap% "../images/normal-proj.png"))
+
+    (define/override (get-bitmap)
+      projectile-bitmap))) 
       
       

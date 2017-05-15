@@ -5,8 +5,10 @@
 (require "player.rkt")
 (require "Items.rkt")
 (require "key-handler.rkt")
+
 (define game-board%
   (class object%
+    
     ;;Members of class character
     (init-field
      _width
@@ -77,7 +79,7 @@
     
     ;; Adds item to the list with projectiles
     (define/public (add-projectile projectile)
-      (add-to-list _list-of-projectiles projectile))
+      (set! _list-of-projectiles (append (list projectile) _list-of-projectiles)))
 
     ;; Removes the projectile from the list with projectiles.
     (define/public (delete-projectile projectile)
@@ -89,7 +91,7 @@
     
     ;; Adds item to the list with projectiles
     (define/public (add-asteroid asteroid)
-      (add-to-list _list-of-asteroids asteroid))
+       (set! _list-of-asteroids (append (list asteroid) _list-of-asteroids)))
 
     ;; Removes the projectile from the list with projectiles.
     (define/public (delete-asteroid asteroid)
@@ -150,28 +152,35 @@
       (let ([background-dc (get-dc)])
         (send background-dc set-background "black")
         (send background-dc clear)
-        (render-function this background-dc )))
+        (render-function this background-dc)))
 
     (super-new)))
 
 ;; Render function
     (define (render-function canvas dc)
+     ;;Draw projectiles
+      (for-each (lambda (object)
+                  (send canvas draw-object object dc))
+                (send game-board get-list-of-projectiles))
 
-      ;;Draw player
+     ;;Draw player
       (for-each (lambda (player)
                   (send canvas draw-object player dc))
                 (send game-board get-list-of-player)))
 
-      #|
+
+   #|    ;;Draw projectiles
+      (for-each (lambda (object)
+                  (send canvas draw-object object dc))
+     (send game-board get-list-of-projectiles)))
+   |#        
+#|
+
       ;;Draw enemies
       (for-each (lambda (enemie)
                    (send canvas draw-object enemie dc))
                 (send game-board get-list-of-enemies))
 
-      ;;Draw projectiles
-      (for-each (lambda (object)
-                   (send canvas draw-object object dc))
-                (send game-board get-list-of-projectiles))
 
       ;;Draw power-ups
       (for-each (lambda (object)
@@ -183,14 +192,16 @@
                 (send game-board get-list-of-asteroids)))
 |#
 
-
 ;; Actions depending on pressed key
 (define (keyboard-input key-event)
    (let
        ((key-tag (send key-event get-key-code)))
      (cond
        ((equal? key-tag #\d)
-        (send player move-x (send player get-speed)))
+        (begin
+          #t
+          (send player move-x (send player get-speed))))
+       
        ((equal? key-tag  #\a)
         (send player move-x (- 0 (send player get-speed))))
 
@@ -201,22 +212,23 @@
         (send player move-y (send player get-speed)))
 
        ((equal? key-tag  #\space)
-        (unless (not (send player can-fire?))   
-          (fire))))))
+        (unless (not (send player can-fire?)) (fire))))))
 
 (define (fire)
   (let ((type_tmp 0))
-        (if (> (send player get-DMG) 5)
-            (set! type_tmp 5)
-            (set! type_tmp 4))
-        (new projectile%
-             [_height 11]
-             [_width 11]
-             [_x-pos (+ (send player get-x-pos) (send player get-width) 2)]
-             [_y-pos (+ (send player get-y-pos) (send player get-height) 2)]
-             [_type type_tmp]
-             [_facing-direction (send player get-facing-direction)]
-             [_DMG (send player get-DMG)])))
+    (if (> (send player get-DMG) 5)
+        (set! type_tmp 5)
+        (set! type_tmp 4))
+    ;; creates a projectile each and adds to list of projectiles
+    (send game-board add-projectile
+          (new projectile%
+               [_height 11]
+               [_width 11]
+               [_x-pos (+ (send player get-x-pos) (send player get-width) 2)]
+               [_y-pos (- (send player get-y-pos) (send player get-height) 2)]
+               [_type type_tmp]
+               [_facing-direction (send player get-facing-direction)]
+               [_DMG (send player get-DMG)]))))
 
 ;;init game canvas
 (define canvas (new game-canvas%
@@ -239,5 +251,21 @@
                           [notify-callback refresh-canvas]))
                            
 (send update-timer start 16 #f)
+
 ;; ------- REMOVE WHEN WORKING!
 (send game-board add-player player)
+
+
+(define proj (let ((type_tmp 0))
+               (if (> (send player get-DMG) 5)
+                   (set! type_tmp 5)
+                   (set! type_tmp 4))
+               (new projectile%
+                    [_height 11]
+                    [_width 11]
+                    [_x-pos (+ (send player get-x-pos) (send player get-width) 2)]
+                    [_y-pos (- (send player get-y-pos) (send player get-height) 2)]
+                    [_type type_tmp]
+                    [_facing-direction (send player get-facing-direction)]
+                    [_DMG (send player get-DMG)])))
+(send game-board add-projectile proj)

@@ -1,7 +1,6 @@
 #lang racket/gui
 (provide player% player)
 (require "characters.rkt")
-(require "../functions.rkt")
 
 (define player%
   (class character%
@@ -25,7 +24,7 @@
 
     ;; Removes power-up  from list with power-ups
      (define/public (delete-power-up power-up)
-       (delete-from-list _list-of-power-ups power-up))
+       (remove power-up _list-of-power-ups ))
 
     ;; Type == 1 , DMG
     ;; Type == 2 , SPEED
