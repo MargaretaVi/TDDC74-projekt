@@ -1,8 +1,9 @@
 #lang racket/gui
-(provide game-board% game-board game-window canvas game-canvas%)
+(provide game-board%)
 (require "../functions.rkt")
 (require "../graphics.rkt")
 (require "player.rkt")
+(require "enemie.rkt")
 (require "Items.rkt")
 (require "key-handler.rkt")
 
@@ -91,7 +92,7 @@
     
     ;; Adds item to the list with projectiles
     (define/public (add-asteroid asteroid)
-       (set! _list-of-asteroids (append (list asteroid) _list-of-asteroids)))
+      (set! _list-of-asteroids (append (list asteroid) _list-of-asteroids)))
 
     ;; Removes the projectile from the list with projectiles.
     (define/public (delete-asteroid asteroid)
@@ -157,57 +158,59 @@
     (super-new)))
 
 ;; Render function
-    (define (render-function canvas dc)
-      ;;Draw player
-      (for-each (lambda (player)
-                  (send canvas draw-object player dc))
-                (send game-board get-list-of-player))
-     ;;Draw projectiles
-      (for-each (lambda (object)
-                  (send object update)
-                  (send canvas draw-object object dc))
-                (send game-board get-list-of-projectiles)))
+(define (render-function canvas dc)
+  ;;Draw player
+  (for-each (lambda (player)
+              (send canvas draw-object player dc))
+            (send game-board get-list-of-player))
+  ;;Draw projectiles
+  (for-each (lambda (object)
+              (send object update)
+              (send canvas draw-object object dc))
+            (send game-board get-list-of-projectiles))
 
-#|
+
       ;;Draw enemies
       (for-each (lambda (enemie)
-                  (send object update)
+                  (send enemie update)
                    (send canvas draw-object enemie dc))
-                (send game-board get-list-of-enemies))
-
-
+                (send game-board get-list-of-enemies)))
+#|
       ;;Draw power-ups
       (for-each (lambda (object)
+                  (send object update)
                    (send canvas draw-object object dc))
                 (send  game-board  get-list-of-power-ups))
       ;;draw asteroids
       (for-each (lambda (asteroid)
+                  (send object update)
                    (send canvas draw-object asteroid dc))
                 (send game-board get-list-of-asteroids)))
 |#
 
-;; Actions depending on pressed key
+;; Keyboard actions, depends on input
 (define (keyboard-input key-event)
-   (let
-       ((key-tag (send key-event get-key-code)))
-     (cond
-       ((equal? key-tag #\d)
-        (begin
-          #t
-          (send player move-x (send player get-speed))))
+  (let
+      ((key-tag (send key-event get-key-code)))
+    (cond
+      ((equal? key-tag #\d)
+       (begin
+         #t
+         (send player move-x (send player get-speed))))
        
-       ((equal? key-tag  #\a)
-        (send player move-x (- 0 (send player get-speed))))
+      ((equal? key-tag  #\a)
+       (send player move-x (- 0 (send player get-speed))))
 
-       ((equal? key-tag #\w)
-        (send player move-y (- 0 (send player get-speed))))
+      ((equal? key-tag #\w)
+       (send player move-y (- 0 (send player get-speed))))
 
-       ((equal? key-tag  #\s)
-        (send player move-y (send player get-speed)))
+      ((equal? key-tag  #\s)
+       (send player move-y (send player get-speed)))
 
-       ((equal? key-tag  #\space)
-        (unless (not (send player can-fire?)) (fire))))))
+      ((equal? key-tag  #\space)
+       (unless (not (send player can-fire?)) (fire))))))
 
+;; Fire-function when space is pressed
 (define (fire)
   (let ((type_tmp 0))
     (if (> (send player get-DMG) 5)
@@ -241,11 +244,22 @@
   (send canvas refresh))
 
 ;;Timer which says when the canvas should update
-(define update-timer (new timer%
-                          [notify-callback refresh-canvas]))
+(define update-timer (new timer% [notify-callback refresh-canvas]))
                            
 (send update-timer start 16 #f)
 
+;;Enemie-spawner
+
+(define (spawn-enemy)
+  (let ((tmp
+         (new enemie%
+              [_height 11]
+              [_width 11])))
+    (send tmp random-spawn-pos game-board)
+    (send game-board add-enemie tmp)))
+
+(define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
+(send spawn-enemy-timer start 1000 #f)
 (send game-board add-player player)
 
 ;; ------- REMOVE WHEN WORKING!

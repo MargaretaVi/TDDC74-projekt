@@ -8,10 +8,11 @@
      _x-pos
      _y-pos
      _cool-down
-     _facing-direction)
+     _facing-direction
+     _speed)
     (inherit
-      fire
-      move-y)
+      move-y
+      move-x)
     (init-field
      [_scorevalue 0]
      [_type 0])
@@ -48,8 +49,11 @@
     (define boss-bitmap
       (make-object bitmap% "../images/boss.png"))
 
+    ;Returns bitmap of enemy
     (define/override (get-bitmap)
-      enemie-bitmap)
-    
+      (if (equal? _type 0)
+          enemie-bitmap
+          boss-bitmap))
+
     (super-new)))
 

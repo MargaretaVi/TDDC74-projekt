@@ -80,7 +80,7 @@
     (define/public (get-bitmap)
       (void))
 
-    ;; Update position of character
+    ;; Update position, health of character
     (define/public (update)
       (move-x 0)
       (move-y _speed))
