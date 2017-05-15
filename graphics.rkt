@@ -10,9 +10,10 @@
                            [height 1000]
                            [label "Space invader"]))
 
+(define *character* (new character% [_width 10] [_height 10]))
 
 (define (drawing-proc canvas *character* dc)
-  (let ((our-picture (make-object bitmap% "AA.png")))
+  (let ((our-picture (make-object bitmap% "classes/AA.png")))
     (send dc draw-bitmap our-picture (send *character* get-x-pos) (send *character* get-y-pos))))
 
 

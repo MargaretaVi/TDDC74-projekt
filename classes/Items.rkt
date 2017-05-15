@@ -1,5 +1,5 @@
-#lang racket
-(provide item% astroid% projectile%)
+#lang racket/gui
+(provide item% projectile%)
 
 (define item%
   (class object%
