@@ -14,14 +14,10 @@
      _health
      _can-fire)
     (inherit move-x
-             move-y
-             fire)
+             move-y)
     (init-field
-     _name
      [_list-of-power-ups '()])
-    
-      (define/public (get-name)
-      _name)
+   
     
      ;; Returns a list of power ups that the character currently holds
      (define/public (get-list-of-power-ups)
@@ -49,24 +45,9 @@
         ((eq? (send power-up get-type) 3)
          (set! _health (+ _health (send power-up get-value ))))))
  
-    ;; Actions depending on pressed key
-    (define/public (keyboard-input input-list)
-      (cond
-        ((send input-list pressed? #\d)
-         (move-x _speed))
-        ((send input-list pressed? #\a)
-         (move-x (- 0 _speed)))
-        ((send input-list pressed? #\w)
-         (move-y (- 0 _speed)))
-        ((send input-list pressed? #\s)
-         (move-y _speed))
-        ((send input-list pressed? #\space)
-         (unless (not _can-fire)   
-           (fire)))))
-    
      ;; player bitmap
     (define player-bitmap
-      (make-object bitmap% "../images/player-bit.png"))
+      (make-object bitmap% "../images/player.png"))
 
     (define/override (get-bitmap)
       player-bitmap)
@@ -74,6 +55,6 @@
     (super-new)))
      
 (define player
-  (new character%
+  (new player%
        [_width 11]
        [_height 11]))

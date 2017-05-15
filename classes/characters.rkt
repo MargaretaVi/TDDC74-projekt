@@ -1,7 +1,5 @@
 #lang racket/gui
 (provide character%)
-(require "Items.rkt")
-
 (define character%
   (class object%
 
@@ -12,7 +10,7 @@
      [_health 10]
      [_x-pos 0] ;; states the upper left corner
      [_y-pos 0] ;; states the upper left corner
-     [_speed 2] ;; how many pixels per update
+     [_speed 10] ;; how many pixels per update
      [_can-fire #t]
      [_cool-down 600]
      [_facing-direction 1];; facing upwards
@@ -78,19 +76,23 @@
     (define/public (reset-can-fire)
       (set! _can-fire #t))
 
-    (define/public (fire)      
+    #|
+    (define/public (fire game-board)      
       ;; Creates a projectile object
       (let ((type_tmp 0))
         (if (> _DMG 5)
             (set! type_tmp 5)
             (set! type_tmp 4))
         (new projectile%
+             [_height 11]
+             [_width 11]
              [_x-pos (+ (send this get-x-pos) (send this get-width) 2)]
              [_y-pos (+ (send this get-y-pos) (send this get-height) 2)]
              [_type type_tmp]
              [_facing-direction _facing-direction]
-             [_DMG _DMG])))
-
+             [_DMG _DMG]))))
+|#
     (define/public (get-bitmap)
       (void))
+    
     (super-new)))

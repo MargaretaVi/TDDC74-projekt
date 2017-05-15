@@ -1,22 +1,6 @@
 #lang racket/gui
 (provide keyboard-handler% keyboard-list)
-#|
-(define (key-fnc player key-event)
-  (let
-      ((key-tag (send key-event get-key-code)))
-  (cond
-    ((eq? key-tag #\space)
-     (send player fire))
-    ((eq? key-tag #\a)
-     (send player move-x -15))
-    ((eq? key-tag #\d)
-     (send player move-x 15))
-    ((eq? key-tag #\w)
-     (send player move-y -15))
-    ((eq? key-tag #\s)
-     (send player move-y 15))))
-  (send a-window refresh))
-|#
+
 (define keyboard-handler%
   (class object%
     (super-new) 

@@ -7,5 +7,7 @@
 (require "classes/player.rkt")
 (require "classes/enemie.rkt")
 
+
 ;; Add player to list
 (send game-board add-player player)
+
