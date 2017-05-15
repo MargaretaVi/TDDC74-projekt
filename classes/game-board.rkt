@@ -1,5 +1,5 @@
 #lang racket/gui
-(provide game-board% game-board)
+(provide game-board% game-board game-window canvas)
 (require "../functions.rkt")
 (require "../graphics.rkt")
 (require "player.rkt")
@@ -52,7 +52,7 @@
 
     ;; Adds character to the list with enemies.
     (define/public (add-enemie enemie)
-       (set! _list-of-enemies (append (list enemie) _list-of-enemies)))
+      (set! _list-of-enemies (append (list enemie) _list-of-enemies)))
     
     ;; Removes the enemies from the list with enemies.
     (define/public (delete-enemie enemie)
@@ -104,6 +104,7 @@
                              [callback (lambda (button event) (pause/play))]
                              [label "Play"]))
     (send play-button show #t)
+    
     ;;Pause function
     (define/public (pause/play)
       (if _paused
@@ -115,7 +116,6 @@
             (send update-timer stop)
             (set! _paused (not _paused))
             (send pause-window show #t))))
-    
     (super-new)))
 
 (define game-window (new frame%
@@ -136,37 +136,6 @@
     (send dc draw-bitmap our-picture (send  character  get-x-pos) (send  character get-y-pos))))
 |#
 
-;; draw object function
-(define (draw-object object dc)
-  (send dc draw-bitmap (send object get-bitmap) (send object get-x-pos) (send object get-y-pos)))
-
-;; Render function
-(define (render-function canvas dc)
-
-  ;;Draw player  
-  (for-each (lambda (player)
-              (draw-object player dc))
-            (send game-board get-list-of-player))
-
-  ;;Draw enemies
-  (for-each (lambda (enemie)
-              (draw-object enemie dc))
-            (send game-board get-list-of-enemies))
-
-  ;;Draw projectiles
-  (for-each (lambda (object)
-              (draw-object object dc))
-            (send game-board get-list-of-projectiles))
-
-  ;;Draw power-ups
-  (for-each (lambda (object)
-              (draw-object object dc))
-            (send  game-board  get-list-of-power-ups))
-  ;;draw asteroids
-  (for-each (lambda (asteroid)
-              (draw-object asteroid dc))
-            (send game-board get-list-of-asteroids)))
-
 
 ;; canvas-class for the game
 (define game-canvas%
@@ -174,15 +143,53 @@
     (init-field
      keyboard-input)
     (inherit get-dc)
-    
+    #|
     (define/override (on-char key-event)
       (keyboard-input key-event))
+    |#
+    (define/override (on-char key-event)
+      (cond
+        ((eq? (send key-event get-key-code) 'escape) (send game-board pause/play))
+        (else (send keyboard-input add-key (send key-event get-key-code)))))
     
     (define/override (on-paint)
-      (let ([my-dc (get-dc)])
-        (send my-dc clear)
-        (send my-dc set-background "black")))
+      (let ([background-dc (get-dc)])
+        (send background-dc clear)
+        (send background-dc set-background "black")))
+
+    ;; draw object function
+    (define/public (draw-object object dc)
+      (send dc draw-bitmap (send object get-bitmap) (send object get-x-pos) (send object get-y-pos)))
+
     (super-new)))
+
+;; Render function
+    (define (render-function canvas dc)
+
+      ;;Draw player  
+      (for-each (lambda (player)
+                  (send canvas draw-object player dc))
+                (send game-board get-list-of-player))
+
+      ;;Draw enemies
+      (for-each (lambda (enemie)
+                   (send canvas draw-object enemie dc))
+                (send game-board get-list-of-enemies))
+
+      ;;Draw projectiles
+      (for-each (lambda (object)
+                   (send canvas draw-object object dc))
+                (send game-board get-list-of-projectiles))
+
+      ;;Draw power-ups
+      (for-each (lambda (object)
+                   (send canvas draw-object object dc))
+                (send  game-board  get-list-of-power-ups))
+      ;;draw asteroids
+      (for-each (lambda (asteroid)
+                   (send canvas draw-object asteroid dc))
+                (send game-board get-list-of-asteroids)))
+
 
 ;; Actions depending on pressed key
 (define (keyboard-input keyboard-list)
@@ -206,17 +213,17 @@
 (define (key-fnc key-event)
   (let
       ((key-tag (send key-event get-key-code)))
-  (cond
-    ((eq? key-tag #\space)
-     (send player fire))
-    ((eq? key-tag #\a)
-     (send player move-x (- 0 (send player get-speed))))
-    ((eq? key-tag #\d)
-     (send player move-x (send player get-speed)))
-    ((eq? key-tag #\w)
-     (send player move-y (- 0 (send player get-speed))))
-    ((eq? key-tag #\s)
-     (send player move-y (send player get-speed)))))
+    (cond
+      ((eq? key-tag #\space)
+       (send player fire))
+      ((eq? key-tag #\a)
+       (send player move-x (- 0 (send player get-speed))))
+      ((eq? key-tag #\d)
+       (send player move-x (send player get-speed)))
+      ((eq? key-tag #\w)
+       (send player move-y (- 0 (send player get-speed))))
+      ((eq? key-tag #\s)
+       (send player move-y (send player get-speed)))))
   (send game-window refresh))
 
 ;;init game canvas
@@ -229,7 +236,7 @@
 
 ;;Return the canvas
 (define (get-game-canvas)
-  canvas) 
+  canvas)
 
 ;;Uppdate canvas
 (define (refresh-canvas)
@@ -239,4 +246,4 @@
 (define update-timer (new timer%
                           [notify-callback refresh-canvas]))
                            
-(send update-timer start 16 #f)
+(send update-timer start 16 #t)

@@ -13,8 +13,9 @@
       fire
       move-y)
     (init-field
-     [_scorevalue 0])
-     
+     [_scorevalue 0]
+     [_type 0])
+    ;; type here is either 0 or 1, indicating if it is a normal enemy or a boss 
     ;; This is the opposite direction from how the player moves.
     ;;Reasonable since enemies moves down and player moves up
     (set! _facing-direction 0)
@@ -46,6 +47,9 @@
     ;; boss bitmap
     (define boss-bitmap
       (make-object bitmap% "../images/boss.png"))
+
+    (define/override (get-bitmap)
+      enemie-bitmap)
     
     (super-new)))
 

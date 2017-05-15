@@ -9,4 +9,3 @@
 
 ;; Add player to list
 (send game-board add-player player)
-

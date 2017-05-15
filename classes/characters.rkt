@@ -90,4 +90,7 @@
              [_type type_tmp]
              [_facing-direction _facing-direction]
              [_DMG _DMG])))
+
+    (define/public (get-bitmap)
+      (void))
     (super-new)))
