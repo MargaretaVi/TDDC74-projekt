@@ -1,5 +1,5 @@
 #lang racket/gui
-(provide player%)
+(provide player% player)
 (require "characters.rkt")
 (require "../functions.rkt")
 
@@ -11,7 +11,11 @@
      _DMG
      _DMG-roof
      _speed
-     _health)
+     _health
+     _can-fire)
+    (inherit move-x
+             move-y
+             fire)
     (init-field
      _name
      [_list-of-power-ups '()])
@@ -44,12 +48,33 @@
          (set! _speed (+ _speed (send power-up get-value )))) 
         ((eq? (send power-up get-type) 3)
          (set! _health (+ _health (send power-up get-value ))))))
-
-          
-    ;; players bitmap
-    (define *player-bitmap* (make-object bitmap% "../images/player-bit.png"))
-   
+ 
+    ;; Actions depending on pressed key
+    (define/public (keyboard-input input-list)
+      (cond
+        ((send input-list pressed? #\d)
+         (move-x _speed)))
+      (cond
+        ((send input-list pressed? #\a)
+         (move-x (- 0 _speed))))
+      (cond
+        ((send input-list pressed? #\w)
+         (move-y (- 0 _speed))))
+      (cond
+        ((send input-list pressed? #\s)
+         (move-y _speed)))
+      (cond
+        ((send input-list pressed? #\space)
+         (unless (not _can-fire)   
+           (fire)))))
+    
+     ;; player bitmap
+    (define player-bitmap
+      (make-object bitmap% "../images/player-bit.png"))
+  
     (super-new)))
      
-  
-    
+(define player
+  (new character%
+       [_width 11]
+       [_height 11]))

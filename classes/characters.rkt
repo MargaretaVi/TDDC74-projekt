@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/gui
 (provide character%)
 (require "Items.rkt")
 
@@ -88,10 +88,4 @@
              [_type type_tmp]
              [_facing-direction _facing-direction]
              [_DMG _DMG])))
-
-    ;;update function
-    (define/public (update)
-      (void))
-      
- 
     (super-new)))

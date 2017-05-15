@@ -40,8 +40,12 @@
            [just-once? #f]))
  
     ;; Enemie bitmap
-    (define *enemie-bitmap*
-      (make-object bitmap% "../images/player-bit.png"))
-   
+    (define enemie-bitmap
+      (make-object bitmap% "../images/enemie.png"))
+
+    ;; boss bitmap
+    (define boss-bitmap
+      (make-object bitmap% "../images/boss.png"))
+    
     (super-new)))
 

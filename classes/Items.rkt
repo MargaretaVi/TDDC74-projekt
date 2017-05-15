@@ -1,5 +1,5 @@
-#lang racket
-(provide item% astroid% projectile%)
+#lang racket/gui
+(provide item% projectile%)
 
 (define item%
   (class object%
@@ -78,7 +78,7 @@ _type:
             [(equal? _type 2) (set-value 2)]
             [(equal? _type 3) (set-value 3)]
             [else (void)]))
-    ;;--------- CHANGE THE BITMAP TO THE CORRECT ONE    
+
     ;; health-power-up bitmap
     (define *health-bitmap* (make-object bitmap% "../images/health-img.png"))
     
@@ -87,9 +87,6 @@ _type:
     
     ;; speed-power-up bitmap
     (define *speed-bitmap* (make-object bitmap% "../images/speed.png"))
-    
-    ;; asteroid bitmap
-    ;(define *asteroid-bitmap* (make-object bitmap% "../images/player-bit.png"))
 
     ;; projectile bitmap
     (define *projectile-bitmap* (make-object bitmap% "../images/player-bit.png"))
@@ -111,8 +108,6 @@ _type:
     (set-width 15)
     (set-value 1)
     (init-field _facing-direction
-                _DMG)
-
-    ))
+                _DMG)))
       
       

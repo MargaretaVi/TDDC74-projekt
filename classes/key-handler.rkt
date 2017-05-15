@@ -1,29 +1,7 @@
 #lang racket/gui
-(require "characters.rkt")
-(require "player.rkt")
+(provide keyboard-handler% keyboard-list)
 
-(define *character* (new character% [_height 1] [_width 1])) 
-(define a-window (new frame%
-                          [label "Canvas"]
-                          [width 500]
-                          [height 500]))
-(send a-window show #t)
-
-
-(define (drawing-proc canvas dc)
-  (let ((our-picture (make-object bitmap% "AA.png")))
-    (send dc draw-bitmap our-picture (send *character* get-x-pos) (send *character* get-y-pos))))
-    
-
-(define a-canvas%
-  (class canvas%
-    (init-field keyboard-handler)
-
-    (define/override (on-char key-fnc)
-      (keyboard-handler key-fnc))
-    (super-new)))
-
-(define (key-fnc key-event)
+(define (key-fnc *character* key-event a-window)
   (let
       ((key-tag (send key-event get-key-code)))
   (cond
@@ -38,12 +16,35 @@
     ((eq? key-tag #\s)
      (send *character* move-y 15))))
   (send a-window refresh))
-;(send *character* get-y-pos)
-(define our-canvas (new a-canvas%
-                         [parent a-window]
-                         [paint-callback drawing-proc]
-                         [keyboard-handler key-fnc]))
-(provide key-fnc)
+
+(define keyboard-handler%
+  (class object%
+    (super-new) 
+    (init-field
+     [_list-of-pressed-keys '()])
+
+    ;; Returns list
+    (define/public (get-list-of-pressed-keys) 
+      _list-of-pressed-keys)
+
+    ;; Add pressed key to list
+    (define/public (add-key key)
+      (unless (pressed? key)
+        (set! _list-of-pressed-keys (append _list-of-pressed-keys (list key)))))
+
+    ;; Remove pressed key from list
+      (define/public (remove-key key)
+        (set! _list-of-pressed-keys (remove key _list-of-pressed-keys equal?)))
+    
+    ;; Predicate, is key pressed?
+      (define/public (pressed? key)
+        (let ((pressed #f))
+          (for-each (lambda (element)
+                      (if (eq? element key)
+                          (set! pressed #t)
+                          (void)))
+                    _list-of-pressed-keys)
+          pressed))))
 
 
-;(send our-canvas focus)
+(define keyboard-list (new keyboard-handler%))
