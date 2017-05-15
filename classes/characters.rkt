@@ -46,6 +46,8 @@
     (define/public (get-height)
       _height)
     
+    (define/public (get-speed)
+      _speed)
     ;; ------------------------------------
 
     ;; Sets the x-pos to a specific value

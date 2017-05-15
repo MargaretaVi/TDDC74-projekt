@@ -53,17 +53,13 @@
     (define/public (keyboard-input input-list)
       (cond
         ((send input-list pressed? #\d)
-         (move-x _speed)))
-      (cond
+         (move-x _speed))
         ((send input-list pressed? #\a)
-         (move-x (- 0 _speed))))
-      (cond
+         (move-x (- 0 _speed)))
         ((send input-list pressed? #\w)
-         (move-y (- 0 _speed))))
-      (cond
+         (move-y (- 0 _speed)))
         ((send input-list pressed? #\s)
-         (move-y _speed)))
-      (cond
+         (move-y _speed))
         ((send input-list pressed? #\space)
          (unless (not _can-fire)   
            (fire)))))
