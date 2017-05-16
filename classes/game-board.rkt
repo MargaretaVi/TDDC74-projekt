@@ -269,11 +269,11 @@
 
 ;;Enemy spawn timer
 (define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
-;(send spawn-enemy-timer start 1000 #f)
+(send spawn-enemy-timer start 1000 #f)
 
 ;;power-up spawn timer
 (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
-;(send spawn-power-up-timer start 1000 #f)
+(send spawn-power-up-timer start 1000 #f)
 
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))

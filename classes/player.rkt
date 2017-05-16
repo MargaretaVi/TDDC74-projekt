@@ -52,7 +52,7 @@
  
      ;; player bitmap
     (define player-bitmap
-      (make-object bitmap% "../images/player.png"))
+      (read-bitmap "../images/player.png"))
 
     (define/override (get-bitmap)
       player-bitmap)

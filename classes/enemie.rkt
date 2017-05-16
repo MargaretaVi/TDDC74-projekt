@@ -39,11 +39,11 @@
  
     ;; Enemie bitmap
     (define enemie-bitmap
-      (make-object bitmap% "../images/enemie.png"))
+      (read-bitmap "../images/enemie.png"))
 
     ;; boss bitmap
     (define boss-bitmap
-      (make-object bitmap% "../images/boss.png"))
+      (read-bitmap  "../images/boss.png"))
 
     ;Returns bitmap of enemy
     (define/override (get-bitmap)

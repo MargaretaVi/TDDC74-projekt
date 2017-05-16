@@ -81,16 +81,16 @@ TYPE == 4 Asteroid
             [else (set-value 0)]))
 
     ;; health-power-up bitmap
-    (define health-bitmap (make-object bitmap% "../images/health-img.png"))
+    (define health-bitmap (read-bitmap "../images/health-img.png"))
     
     ;; DMG-power-up bitmap
-    (define DMG-bitmap (make-object bitmap% "../images/dmg.png"))
+    (define DMG-bitmap (read-bitmap "../images/dmg.png"))
     
     ;; speed-power-up bitmap
-    (define speed-bitmap (make-object bitmap% "../images/speed.png"))
+    (define speed-bitmap (read-bitmap "../images/speed.png"))
 
     ;; asteroid bitmap
-    (define asteroid-bitmap (make-object bitmap% "../images/asteroid.bmp"))
+    (define asteroid-bitmap (read-bitmap "../images/asteroid.bmp"))
 
     ;; Returns the correct bitmap
     (define/public (get-bitmap)
@@ -156,10 +156,10 @@ TYPE == 4 Asteroid
     
     ;; projectile bitmap
     (define normal-projectile-bitmap
-      (make-object bitmap% "../images/normal-proj.bmp"))
+      (read-bitmap "../images/normal-proj.bmp"))
     
     (define better-projectile-bitmap
-      (make-object bitmap% "../images/better-proj.png"))
+      (read-bitmap "../images/better-proj.png"))
 
     (define/override (get-bitmap)
       (if (>= _DMG 40)
