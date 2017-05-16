@@ -63,28 +63,32 @@
     
     ;; Adds player to the list with player.
     (define/public (add-player player)
-      (set! _list-of-player (append (list player) _list-of-player)))
+      (set! _list-of-player
+            (append (list player) _list-of-player)))
     
     ;; Adds character to the list with enemies.
     (define/public (add-enemy enemy)
-      (set! _list-of-enemies (append (list enemy) _list-of-enemies)))
+      (set! _list-of-enemies
+            (append (list enemy) _list-of-enemies)))
 
     ;; Adds item to the list with power-ups
     (define/public (add-power-up power-up)
-      (set! _list-of-power-ups (append (list power-up) _list-of-power-ups)))
+      (set! _list-of-power-ups
+            (append (list power-up) _list-of-power-ups)))
 
     ;; Adds item to the list with projectiles
     (define/public (add-projectile projectile)
-      (set! _list-of-projectiles (append (list projectile) _list-of-projectiles)))
+      (set! _list-of-projectiles
+            (append (list projectile) _list-of-projectiles)))
 
     ;; Adds item to the list with projectiles
     (define/public (add-asteroid asteroid)
-      (set! _list-of-asteroids (append (list asteroid) _list-of-asteroids)))
+      (set! _list-of-asteroids
+            (append (list asteroid) _list-of-asteroids)))
 
-    
     ;; Removes player from the list with player.
     (define/public (delete-player player)
-      (delete-from-list _list-of-player player))
+      (remove player _list-of-player))
 
     ;; Removes the enemies from the list with enemies.
     (define/public (delete-enemy enemy)
@@ -95,12 +99,12 @@
       (remove power-up _list-of-power-ups))
     
     ;; Removes the projectile from the list with projectiles.
-    (define/public (delete-asteroid asteroid)
-      (remove asteroid _list-of-asteroids ))
-
-    ;; Removes the projectile from the list with projectiles.
     (define/public (delete-projectile projectile)
       (remove projectile _list-of-projectiles ))
+    
+    ;; Removes the asteroid from the list with asteroids.
+    (define/public (delete-asteroid asteroid)
+      (remove asteroid _list-of-asteroids ))
 
     ;; set the list to a new kind of list
     (define/public (set-list-of-player lst)
@@ -112,6 +116,9 @@
     (define/public (set-list-of-power-ups lst)
       (set! _list-of-power-ups lst))
 
+    (define/public (set-list-of-projectiles lst)
+      (set! _list-of-projectiles lst))
+    
     (define/public (set-list-of-asteroids lst)
       (set! _list-of-asteroids lst))
     
@@ -164,7 +171,8 @@
     
     ;; draw object function
     (define/public (draw-object object dc)
-      (send dc draw-bitmap (send object get-bitmap) (send object get-x-pos) (send object get-y-pos)))
+      (send dc draw-bitmap (send object get-bitmap)
+            (send object get-x-pos) (send object get-y-pos)))
     
     (define/override (on-paint)
       (let ([background-dc (get-dc)])
@@ -264,26 +272,56 @@
     (send tmp set-height (send (send tmp get-bitmap) get-height))
     (send game-board add-asteroid tmp)))
 
-;;At collision with another object
-(define (action-when-collied)
+;;check interactions of object 
+(define (check-objects)
   
   (for-each (lambda (power-up)
-              (unless (collision? player power-up)
+              (unless (not (out-of-bounce? power-up game-board))
+                (send game-board set-list-of-power-ups
+                      (send game-board delete-power-up power-up)))
+              (unless (not (collision? player power-up))
                 (send player collision-action power-up)
-                (send game-board delete-power-up power-up)))
-            (send game-board get-list-of-power-ups)))
-#|
-   (for-each (lambda (asteroid)
-              (unless (collision? player asteroid)
-                (send player collision-action asteroid)))
+                (send game-board set-list-of-power-ups
+                      (send game-board delete-power-up power-up))))
+            (send game-board get-list-of-power-ups))
+
+  (for-each (lambda (asteroid)
+              (unless (not (out-of-bounce? asteroid game-board))
+                (send game-board set-list-of-asteroids
+                      (send game-board delete-asteroid asteroid)))
+              (unless (not (collision? player asteroid))
+                (send player collision-action asteroid)
+                (send game-board set-list-of-asteroids
+                      (send game-board delete-asteroid asteroid))))
             (send game-board get-list-of-asteroids))
 
-   (for-each (lambda (enemy)
+  (for-each (lambda (enemy)
+              (unless (not (out-of-bounce? enemy game-board))
+                (send game-board set-list-of-enemies
+                      (send game-board delete-enemy enemy)))
               (unless (not (collision? player enemy))
-                (send game-board set-list-of-enemies (send game-board delete-enemy enemy))))
-            (send game-board get-list-of-enemies)))
-  
-|#
+                (send game-board set-list-of-enemies
+                      (send game-board delete-enemy enemy))))
+            (send game-board get-list-of-enemies))
+
+  (for-each (lambda (projectile)
+              (for-each (lambda (enemy)
+                          (unless (not (collision? projectile enemy))
+                            (send game-board set-list-of-enemies
+                                  (send game-board delete-enemy enemy))
+                            (send game-board set-list-of-projectiles
+                                  (send game-board delete-projectile projectile))))
+                        (send game-board get-list-of-enemies))
+              (for-each (lambda (asteroid) 
+                          (unless (not (collision? projectile asteroid))
+                            (send game-board set-list-of-asteroids
+                                  (send game-board delete-asteroid asteroid))
+                            (send game-board set-list-of-projectiles
+                                  (send game-board delete-projectile projectile))))
+                          (send game-board get-list-of-asteroids))
+            (send game-board get-list-of-projectiles)))
+                          
+                                  
 ;; Instantiation of objects
 ;; ---------------------
 (send player set-x-pos (- (exact-round (/ (send game-board get-width) 2))30))
@@ -312,18 +350,13 @@
 
 ;;power-up spawn timer
 (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
-;(send spawn-power-up-timer start 10000 #f)
+(send spawn-power-up-timer start 10000 #f)
 
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-;(send spawn-asteroid-timer start 1000 #f)
+(send spawn-asteroid-timer start 1000 #f)
 
-(define (check-collision)
-  (for-each (lambda (obj)
-              (unless (not (collision? player obj))
-                (send game-board set-list-of-enemies (send game-board delete-enemy obj))))
-            (send game-board get-list-of-enemies)))
-
-(define check-collision-timer (new timer% [notify-callback check-collision]))
-(send check-collision-timer start 16 #f)
+;;collision timer
+(define check-object-timer (new timer% [notify-callback check-objects]))
+(send check-object-timer start 16 #f)
 ;; ------------------
