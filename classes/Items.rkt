@@ -1,5 +1,5 @@
 #lang racket/gui
-(provide item% projectile%)
+(provide item% projectile% create-power-up create-asteroid)
 
 (define item%
   (class object%
@@ -13,14 +13,15 @@
      [_scorevalue 0];placeholder for requirement 2
      [_sound 0]
      [_speed 1]
-     [_facing-direction 1])
+     [_facing-direction 1]
+     [_DMG 0])
 
     #|
 _type:
 Type == 1 , DMG
 Type == 2 , SPEED
 Type == 3 ; HEALTH
-4-5 projectile (4 default, 5 better)
+TYPE == 4 Asteroid
 
 |#
         
@@ -30,7 +31,10 @@ Type == 3 ; HEALTH
     
     (define/public (get-y-pos)
       _y-pos)
-    
+
+    ;; Return type of this object
+    (define/public (get-type)
+      _type)
 
     ;; Moves the item in the x-direction
     (define/public (move-x _speed)
@@ -63,10 +67,10 @@ Type == 3 ; HEALTH
     ; set value
     (define/public (set-value num)
       (set! _value num))
-    
-    ;Random number between 1 and 3 to decide type      
-    (define/public (random-from-to start stop)
-      (+ (random (- stop (- start 1))) start))
+
+    (define/public (random-spawn-pos game-board)
+      (set! _x-pos (random-from-to 0 (- (send game-board get-width) (send this get-width))))
+      (set! _y-pos (random-from-to 0 (exact-round (* (send game-board get-height) 0.01)))))
 
     ;Which type were randomed? Which value does this give?
     (define/public (booster)
@@ -74,7 +78,7 @@ Type == 3 ; HEALTH
       (cond [(equal? _type 1) (set-value 1)]
             [(equal? _type 2) (set-value 2)]
             [(equal? _type 3) (set-value 3)]
-            [else (void)]))
+            [else (set-value 0)]))
 
     ;; health-power-up bitmap
     (define health-bitmap (make-object bitmap% "../images/health-img.png"))
@@ -85,6 +89,9 @@ Type == 3 ; HEALTH
     ;; speed-power-up bitmap
     (define speed-bitmap (make-object bitmap% "../images/speed.png"))
 
+    ;; asteroid bitmap
+    (define asteroid-bitmap (make-object bitmap% "../images/asteroidImage.png"))
+
     ;; Returns the correct bitmap
     (define/public (get-bitmap)
       (cond
@@ -93,25 +100,50 @@ Type == 3 ; HEALTH
         ((equal? (send this get-type) 2)
          speed-bitmap)
         ((equal? (send this get-type) 3)
-         health-bitmap)))
+         health-bitmap)
+        ((equal? (send this get-type) 4)
+         asteroid-bitmap)))
 
     ;;Get speed
-
     (define/public (get-speed)
       _speed)
-
+    
+    ;; update postition
     (define/public (update)
       (move-x 0)
       (move-y _speed))
       
     (super-new)))
 
+;, create item object
+(define (create-power-up)
+  (let ((num (random-from-to 1 3)))
+    (new item%
+         [_height 11]
+         [_width 11]
+         [_type num])))
+
+
+;, create item object
+(define (create-asteroid)
+    (new item%
+         [_height 11]
+         [_width 11]
+         [_type 4]))
+
+;Random number between 1 and 3 to decide type      
+(define (random-from-to start stop)
+  (+ (random (- stop (- start 1))) start))
+
 ;Class projectile, subclass to item
 (define projectile%
   (class item%
     (super-new)
     (inherit-field
-     _height)  
+     _height
+     _width
+     _facing-direction
+     _DMG)  
     (inherit
       set-width
       set-height
@@ -119,9 +151,9 @@ Type == 3 ; HEALTH
     (set-height 25)
     (set-width 15)
     (set-value 1)
-    (init-field
-     _DMG)
+    
 
+    
     ;; projectile bitmap
     (define projectile-bitmap
       (make-object bitmap% "../images/normal-proj.png"))

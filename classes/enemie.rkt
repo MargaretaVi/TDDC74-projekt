@@ -1,5 +1,5 @@
 #lang racket/gui
-(provide enemie%)
+(provide enemie% create-enemy)
 (require "characters.rkt")
 
 (define enemie%
@@ -8,7 +8,6 @@
      _x-pos
      _y-pos
      _cool-down
-     _facing-direction
      _speed)
     (inherit
       move-y
@@ -17,16 +16,13 @@
      [_scorevalue 0]
      [_type 0])
     ;; type here is either 0 or 1, indicating if it is a normal enemy or a boss 
-    ;; This is the opposite direction from how the player moves.
-    ;;Reasonable since enemies moves down and player moves up
-    (set! _facing-direction 0)
-    
+
     ;; enemies has a longer cool down that player
     (set! _cool-down 600)
     
     ;; Creates a random spawn point for the enemie, 
     (define/public (random-spawn-pos game-board)
-      (set! _x-pos (random-from-to 0 (send game-board get-width)))
+      (set! _x-pos (random-from-to 0 (- (send game-board get-width) (send this get-width))))
       (set! _y-pos (random-from-to 0 (exact-round (* (send game-board get-height) 0.01)))))
 
     ;; Randomizer that gives a value between an intervall
@@ -54,6 +50,11 @@
       (if (equal? _type 0)
           enemie-bitmap
           boss-bitmap))
-
+    
     (super-new)))
 
+;;Enemie-spawner
+(define (create-enemy)
+  (new enemie%
+       [_height 11]
+       [_width 11]))

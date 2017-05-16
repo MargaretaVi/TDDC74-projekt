@@ -171,22 +171,23 @@
 
 
       ;;Draw enemies
-      (for-each (lambda (enemie)
-                  (send enemie update)
-                   (send canvas draw-object enemie dc))
-                (send game-board get-list-of-enemies)))
-#|
+      (for-each (lambda (enemy)
+                  (send enemy update)
+                  (send canvas draw-object enemy dc))
+                (send game-board get-list-of-enemies))
+
       ;;Draw power-ups
       (for-each (lambda (object)
                   (send object update)
                    (send canvas draw-object object dc))
                 (send  game-board  get-list-of-power-ups))
+
       ;;draw asteroids
       (for-each (lambda (asteroid)
-                  (send object update)
+                  (send asteroid update)
                    (send canvas draw-object asteroid dc))
                 (send game-board get-list-of-asteroids)))
-|#
+
 
 ;; Keyboard actions, depends on input
 (define (keyboard-input key-event)
@@ -194,19 +195,13 @@
       ((key-tag (send key-event get-key-code)))
     (cond
       ((equal? key-tag #\d)
-       (begin
-         #t
-         (send player move-x (send player get-speed))))
-       
+       (send player move-x (send player get-speed)))
       ((equal? key-tag  #\a)
-       (send player move-x (- 0 (send player get-speed))))
-
+       (send player move-x (- 0 (send player get-speed)))) 
       ((equal? key-tag #\w)
-       (send player move-y (- 0 (send player get-speed))))
-
+       (send player move-y (- 0 (send player get-speed)))) 
       ((equal? key-tag  #\s)
-       (send player move-y (send player get-speed)))
-
+       (send player move-y (send player get-speed))) 
       ((equal? key-tag  #\space)
        (unless (not (send player can-fire?)) (fire))))))
 
@@ -227,7 +222,36 @@
                [_facing-direction (send player get-facing-direction)]
                [_DMG (send player get-DMG)]))))
 
-;;init game canvas
+;; Create enemy object and adds it to game board
+(define (spawn-enemy)
+  (let ((tmp (create-enemy)))
+    (send tmp random-spawn-pos game-board)
+    (send game-board add-enemie tmp)))
+
+;; Create power-up object and adds it to game board
+(define (spawn-power-up)
+  (let ((tmp (create-power-up)))
+    (send tmp random-spawn-pos game-board)
+    (send game-board add-power-up tmp)))
+
+;; Create power-up object and adds it to game board
+(define (spawn-asteroid)
+  (let ((tmp (create-asteroid)))
+    (send tmp random-spawn-pos game-board)
+    (send game-board add-asteroid tmp)))
+
+;; Instantiation of objects
+;; ---------------------
+
+;; player
+(define player
+  (new player%
+       [_width 11]
+       [_height 11]))
+
+(send game-board add-player player)
+
+;;canvas
 (define canvas (new game-canvas%
                     [parent game-window]
                     [keyboard-handler keyboard-input]
@@ -235,31 +259,23 @@
 
 (send canvas show #t)
 
-;;Return the canvas
-(define (get-game-canvas)
-  canvas)
-
 ;;Uppdate canvas
 (define (refresh-canvas)
   (send canvas refresh))
 
-;;Timer which says when the canvas should update
-(define update-timer (new timer% [notify-callback refresh-canvas]))
-                           
+;;Update canvas timer
+(define update-timer (new timer% [notify-callback refresh-canvas]))                         
 (send update-timer start 16 #f)
 
-;;Enemie-spawner
-
-(define (spawn-enemy)
-  (let ((tmp
-         (new enemie%
-              [_height 11]
-              [_width 11])))
-    (send tmp random-spawn-pos game-board)
-    (send game-board add-enemie tmp)))
-
+;;Enemy spawn timer
 (define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
-(send spawn-enemy-timer start 1000 #f)
-(send game-board add-player player)
+;(send spawn-enemy-timer start 1000 #f)
 
-;; ------- REMOVE WHEN WORKING!
+;;power-up spawn timer
+(define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
+;(send spawn-power-up-timer start 1000 #f)
+
+;;asteroid spawn timer
+(define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
+(send spawn-asteroid-timer start 3000 #f)
+;; ------------------

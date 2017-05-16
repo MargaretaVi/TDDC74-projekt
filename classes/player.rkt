@@ -1,5 +1,5 @@
 #lang racket/gui
-(provide player% player)
+(provide player% )
 (require "characters.rkt")
 
 (define player%
@@ -52,10 +52,4 @@
 
     (define/override (get-bitmap)
       player-bitmap)
-  
-  ))
-     
-(define player
-  (new player%
-       [_width 11]
-       [_height 11]))
+))

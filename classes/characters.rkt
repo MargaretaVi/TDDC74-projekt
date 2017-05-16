@@ -10,7 +10,7 @@
      [_health 10]
      [_x-pos 0] ;; states the upper left corner
      [_y-pos 0] ;; states the upper left corner
-     [_speed 10] ;; how many pixels per update
+     [_speed 3] ;; how many pixels per update
      [_can-fire #t]
      [_cool-down 600]
      [_facing-direction 1];; facing downwards
