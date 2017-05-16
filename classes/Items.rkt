@@ -90,7 +90,7 @@ TYPE == 4 Asteroid
     (define speed-bitmap (make-object bitmap% "../images/speed.png"))
 
     ;; asteroid bitmap
-    (define asteroid-bitmap (make-object bitmap% "../images/asteroidImage.png"))
+    (define asteroid-bitmap (make-object bitmap% "../images/asteroid.bmp"))
 
     ;; Returns the correct bitmap
     (define/public (get-bitmap)
@@ -155,9 +155,14 @@ TYPE == 4 Asteroid
 
     
     ;; projectile bitmap
-    (define projectile-bitmap
-      (make-object bitmap% "../images/normal-proj.png"))
+    (define normal-projectile-bitmap
+      (make-object bitmap% "../images/normal-proj.bmp"))
+    
+    (define better-projectile-bitmap
+      (make-object bitmap% "../images/better-proj.png"))
 
     (define/override (get-bitmap)
-      projectile-bitmap))) 
+      (if (>= _DMG 40)
+          better-projectile-bitmap
+          normal-projectile-bitmap))))
       

@@ -5,8 +5,8 @@
 
     ;;Member of class character
     (init-field
-     _height ; y-axis
-     _width ; x-axis
+     [_height 0] ; y-axis
+     [_width 0] ; x-axis
      [_health 10]
      [_x-pos 0] ;; states the upper left corner
      [_y-pos 0] ;; states the upper left corner
@@ -75,7 +75,14 @@
     ;; Sets the variable "can-fire" to true.
     (define/public (reset-can-fire)
       (set! _can-fire #t))
-    
+
+    ;; Set width
+    (define/public (set-width value)
+      (set! _width value))
+
+    ;;Set height
+    (define/public (set-height value)
+      (set! _height value))
     ;; Placeholder for returning the specific bitmap
     (define/public (get-bitmap)
       (void))

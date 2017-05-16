@@ -6,6 +6,8 @@
   (class character%
     (super-new)
     (inherit-field
+     _height
+     _width
      _x-pos
      _y-pos
      _DMG
@@ -15,7 +17,9 @@
      _can-fire
      _facing-direction)
     (inherit move-x
-             move-y)
+             move-y
+             set-height
+             set-width)
     (init-field
      [_list-of-power-ups '()])
    
@@ -52,4 +56,5 @@
 
     (define/override (get-bitmap)
       player-bitmap)
-))
+
+    (set-width (send player-bitmap get-width))))

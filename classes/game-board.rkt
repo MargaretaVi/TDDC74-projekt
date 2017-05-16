@@ -216,7 +216,7 @@
           (new projectile%
                [_height 11]
                [_width 11]
-               [_x-pos (+ (send player get-x-pos) (send player get-width) 2)]
+               [_x-pos (+ (send player get-x-pos) (exact-round (/ (send player get-width) 2)))]
                [_y-pos (- (send player get-y-pos) (send player get-height) 2)]
                [_type type_tmp]
                [_facing-direction (send player get-facing-direction)]
@@ -277,5 +277,5 @@
 
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-(send spawn-asteroid-timer start 3000 #f)
+(send spawn-asteroid-timer start 1000 #f)
 ;; ------------------
