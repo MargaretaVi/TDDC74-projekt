@@ -274,7 +274,8 @@
 
 ;;check interactions of object 
 (define (check-objects)
-  
+  (prevent-walkning-outside player game-board)
+      
   (for-each (lambda (power-up)
               (unless (not (out-of-bounce? power-up game-board))
                 (send game-board set-list-of-power-ups

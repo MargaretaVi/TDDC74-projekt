@@ -16,6 +16,7 @@
      [_facing-direction 1];; facing downwards
      [_DMG 5]
      [_DMG-roof 20]
+     [_alive #t]
      )
 
     ;; Functions that returns the class members
@@ -46,6 +47,8 @@
     
     (define/public (get-speed)
       _speed)
+    (define/public (alive?)
+      _alive)
     ;; ------------------------------------
 
     ;; Sets the x-pos to a specific value

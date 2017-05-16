@@ -43,9 +43,13 @@ TYPE == 6 Asteroid
     (define/public (get-type)
       _type)
 
-    ;; Return type of this object
+    ;; Return value of this object
     (define/public (get-value)
       _value)
+
+    ;; Returns _DMG of object
+    (define/public (get-DMG)
+      _DMG)
     
     ;; Moves the item in the x-direction
     (define/public (move-x _speed)

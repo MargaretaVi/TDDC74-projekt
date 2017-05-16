@@ -15,6 +15,7 @@
      _speed
      _health
      _can-fire
+     _alive
      _facing-direction)
     (inherit move-x
              move-y
@@ -25,36 +26,31 @@
              get-width
              get-height
              set-speed)
-    (init-field
-     [_list-of-power-ups '()])
    
     (set! _facing-direction -1)
     (set-speed 20)
-     ;; Returns a list of power ups that the character currently holds
-     (define/public (get-list-of-power-ups)
-       _list-of-power-ups)
 
-    ;; Removes power-up  from list with power-ups
-     (define/public (delete-power-up power-up)
-       (remove power-up _list-of-power-ups ))
-
-    ;; Type == 1 , DMG
-    ;; Type == 2 , SPEED
-    ;; Type == 3 ; HEALTH
-    ;; *power-up* is a object from class *power-up*
+    ;; Type == 3 , DMG
+    ;; Type == 4 , SPEED
+    ;; Type == 5 ; HEALTH
 
     ;; Decides what happens when collided with an object
     (define/public (collision-action object)
       (cond
-        ((eq? (send object get-type) 3)
+        ((or (equal? (send object get-type) 1) (equal? (send object get-type) 2)
+         (set! _health (- _health (send object get-DMG)))
+         (unless (not (< _health 0))
+           (set! _alive #f))))       
+        ((equal? (send object get-type) 3)
          ;; There is a DMG roof
          (if (> _DMG _DMG-roof)
           (set! _DMG _DMG-roof)
           (set! _DMG (+ _DMG (send object get-value )))))
-        ((eq? (send object get-type) 4)
+        ((equal? (send object get-type) 4)
          (set! _speed (+ _speed (send object get-value )))) 
-        ((eq? (send object get-type) 5)
-         (set! _health (+ _health (send object get-value ))))))
+        ((equal? (send object get-type) 5)
+         (set! _health (+ _health (send object get-value ))))
+        ((equal? (send object get-type) 6))))
  
     ;; player bitmap
     (define player-bitmap

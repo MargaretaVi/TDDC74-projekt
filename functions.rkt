@@ -14,16 +14,8 @@
     
     (and (< _x1-pos (+ _x2-pos _width2)) (> (+ _x1-pos _width1) _x2-pos)
          (< _y1-pos (+ _y2-pos _height2)) (> (+ _height1 _y1-pos) _y2-pos))))
-      
-#|
-if (rect1.x < rect2.x + rect2.width &&
-   rect1.x + rect1.width > rect2.x &&
-   rect1.y < rect2.y + rect2.height &&
-   rect1.height + rect1.y > rect2.y) {
-    // collision detected!
-}
-|#
 
+;; is object outside of the game-board?
 (define (out-of-bounce? object game-board)
   (let ((_obj-x-pos (send object get-x-pos))
         (_obj-y-pos (send object get-y-pos))
@@ -33,4 +25,19 @@ if (rect1.x < rect2.x + rect2.width &&
         (_height (send game-board get-height)))
     (or (< _obj-x-pos 0) (< _obj-y-pos 0)
         (> (+ _obj-x-pos _obj-width) _width) (> (+ _obj-y-pos _obj-height) _height))))
+
+;; prevents the player to walk outside of the game board
+(define (prevent-walkning-outside player game-board)
+  (let ((_obj-x-pos (send player get-x-pos))
+        (_obj-y-pos (send player get-y-pos))
+        (_obj-width (send player get-width))
+        (_obj-height (send player get-height))
+        (_width (send game-board get-width))
+        (_height (send game-board get-height)))
+    (cond
+      ((< _obj-x-pos 0) (send player set-x-pos 0))
+      ((< _obj-y-pos 0) (send player set-y-pos 0))
+      ((> _obj-x-pos _width) (send player set-x-pos _width))
+      ((> _obj-y-pos _height) (send player set-y-pos _height)))))
+    
     
