@@ -318,7 +318,7 @@
                                   (send game-board delete-asteroid asteroid))
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
-                          (send game-board get-list-of-asteroids))
+                          (send game-board get-list-of-asteroids)))
             (send game-board get-list-of-projectiles)))
                           
                                   
