@@ -18,16 +18,23 @@
 
     #|
 _type:
-Type == 1 , DMG
-Type == 2 , SPEED
-Type == 3 ; HEALTH
-TYPE == 4 Asteroid
+1-2 are reserved for enemie 1= normal 2, boss
+Type == 3 , DMG
+Type == 4 , SPEED
+Type == 5 ; HEALTH
+TYPE == 6 Asteroid
 
 |#
         
     ;Get current x- and y-coordinates
     (define/public (get-x-pos)
       _x-pos)
+
+    (define/public (set-x-pos val)
+      (set! _x-pos val))
+
+    (define/public (set-y-pos val)
+      (set! _y-pos val))
     
     (define/public (get-y-pos)
       _y-pos)
@@ -36,6 +43,10 @@ TYPE == 4 Asteroid
     (define/public (get-type)
       _type)
 
+    ;; Return type of this object
+    (define/public (get-value)
+      _value)
+    
     ;; Moves the item in the x-direction
     (define/public (move-x _speed)
       (set! _x-pos (+ _x-pos (* _facing-direction _speed))))

@@ -7,7 +7,6 @@
     (inherit-field
      _x-pos
      _y-pos
-     _cool-down
      _speed)
     (inherit
       move-y
@@ -17,8 +16,8 @@
      [_type 0])
     ;; type here is either 0 or 1, indicating if it is a normal enemy or a boss 
 
-    ;; enemies has a longer cool down that player
-    (set! _cool-down 600)
+    (define/public (get-type)
+      _type)
     
     ;; Creates a random spawn point for the enemie, 
     (define/public (random-spawn-pos game-board)
@@ -55,6 +54,4 @@
 
 ;;Enemie-spawner
 (define (create-enemy)
-  (new enemie%
-       [_height 11]
-       [_width 11]))
+  (new enemie%))

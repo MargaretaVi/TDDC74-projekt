@@ -14,7 +14,7 @@
     (init-field
      _width
      _height
-     _num-of-power-ups
+     _num-of-power-ups ; allowed num of power up at one instance
      [_score 0]
      [_list-of-player '()]
      [_list-of-enemies '()]
@@ -32,71 +32,88 @@
 
     (define/public (get-score)
       _score)
+
+    (define/public (get-num-of-power-ups)
+      _num-of-power-ups)
     ;; ------------------------------------
 
     ;; Increases scorevalue
     (define/public (increase-score _scorevalue)
       (set! _score (+ _score _scorevalue)))
     
-    ;; Returns a list of which player that exists in the game. (should only be 1 member of list)
+    ;; Returns a list of which player that exists in the game. 
     (define/public (get-list-of-player)
       _list-of-player)
-
-    ;; Adds player to the list with player.
-    (define/public (add-player player)
-      (set! _list-of-player (append (list player) _list-of-player)))
-    
-    ;; Removes player from the list with player.
-    (define/public (delete-player player)
-      (delete-from-list _list-of-player player))
 
     ;; Returns a list of which enemies that exists in the game.
     (define/public (get-list-of-enemies)
       _list-of-enemies)
 
-    ;; Adds character to the list with enemies.
-    (define/public (add-enemie enemie)
-      (set! _list-of-enemies (append (list enemie) _list-of-enemies)))
-    
-    ;; Removes the enemies from the list with enemies.
-    (define/public (delete-enemie enemie)
-      (delete-from-list _list-of-enemies enemie))
-
     ;; Returns a list of existing items on the map
     (define/public (get-list-of-power-ups)
       _list-of-power-ups)
-    
-    ;; Adds item to the list with power-ups
-    (define/public (add-power-up power-up)
-      (set! _list-of-power-ups (append (list power-up) _list-of-power-ups)))
-
-    ;; Removes the item from the list with items.
-    (define/public (delete-power-up power-up)
-      (delete-from-list _list-of-power-ups power-up))
 
     ;; Returns a list of existing projectiles on the map
     (define/public (get-list-of-projectiles)
       _list-of-projectiles)
-    
-    ;; Adds item to the list with projectiles
-    (define/public (add-projectile projectile)
-      (set! _list-of-projectiles (append (list projectile) _list-of-projectiles)))
-
-    ;; Removes the projectile from the list with projectiles.
-    (define/public (delete-projectile projectile)
-      (delete-from-list _list-of-projectiles projectile))
 
     ;; Returns a list of existing asteroids on the map
     (define/public (get-list-of-asteroids)
       _list-of-asteroids)
     
+    ;; Adds player to the list with player.
+    (define/public (add-player player)
+      (set! _list-of-player (append (list player) _list-of-player)))
+    
+    ;; Adds character to the list with enemies.
+    (define/public (add-enemy enemy)
+      (set! _list-of-enemies (append (list enemy) _list-of-enemies)))
+
+    ;; Adds item to the list with power-ups
+    (define/public (add-power-up power-up)
+      (set! _list-of-power-ups (append (list power-up) _list-of-power-ups)))
+
+    ;; Adds item to the list with projectiles
+    (define/public (add-projectile projectile)
+      (set! _list-of-projectiles (append (list projectile) _list-of-projectiles)))
+
     ;; Adds item to the list with projectiles
     (define/public (add-asteroid asteroid)
       (set! _list-of-asteroids (append (list asteroid) _list-of-asteroids)))
 
+    
+    ;; Removes player from the list with player.
+    (define/public (delete-player player)
+      (delete-from-list _list-of-player player))
+
+    ;; Removes the enemies from the list with enemies.
+    (define/public (delete-enemy enemy)
+      (remove enemy _list-of-enemies ))
+
+    ;; Removes the item from the list with items.
+    (define/public (delete-power-up power-up)
+      (remove power-up _list-of-power-ups))
+    
     ;; Removes the projectile from the list with projectiles.
     (define/public (delete-asteroid asteroid)
-      (delete-from-list _list-of-asteroids asteroid))
+      (remove asteroid _list-of-asteroids ))
+
+    ;; Removes the projectile from the list with projectiles.
+    (define/public (delete-projectile projectile)
+      (remove projectile _list-of-projectiles ))
+
+    ;; set the list to a new kind of list
+    (define/public (set-list-of-player lst)
+      (set! _list-of-player lst))
+
+    (define/public (set-list-of-enemies lst)
+      (set! _list-of-enemies lst))
+
+    (define/public (set-list-of-power-ups lst)
+      (set! _list-of-power-ups lst))
+
+    (define/public (set-list-of-asteroids lst)
+      (set! _list-of-asteroids lst))
     
     ;; ----------------
     (define pause-window (new dialog%
@@ -124,7 +141,7 @@
 
 (define game-window (new frame%
                          [width 900]
-                         [height 900]
+                         [height 700]
                          [label "Space invader"]))
                              
 (send game-window show #t)
@@ -132,7 +149,7 @@
     
 (define game-board (new game-board%
                         [_width 900]
-                        [_height 900]
+                        [_height 700]
                         [_num-of-power-ups 5]))
 
 ;; canvas-class for the game
@@ -154,7 +171,6 @@
         (send background-dc set-background "black")
         (send background-dc clear)
         (render-function this background-dc)))
-
     (super-new)))
 
 ;; Render function
@@ -163,30 +179,30 @@
   (for-each (lambda (player)
               (send canvas draw-object player dc))
             (send game-board get-list-of-player))
+  
   ;;Draw projectiles
   (for-each (lambda (object)
               (send object update)
               (send canvas draw-object object dc))
             (send game-board get-list-of-projectiles))
 
+  ;;Draw enemies
+  (for-each (lambda (enemy)
+              (send enemy update)
+              (send canvas draw-object enemy dc))
+            (send game-board get-list-of-enemies))
 
-      ;;Draw enemies
-      (for-each (lambda (enemy)
-                  (send enemy update)
-                  (send canvas draw-object enemy dc))
-                (send game-board get-list-of-enemies))
+  ;;Draw power-ups
+  (for-each (lambda (object)
+              (send object update)
+              (send canvas draw-object object dc))
+            (send  game-board  get-list-of-power-ups))
 
-      ;;Draw power-ups
-      (for-each (lambda (object)
-                  (send object update)
-                   (send canvas draw-object object dc))
-                (send  game-board  get-list-of-power-ups))
-
-      ;;draw asteroids
-      (for-each (lambda (asteroid)
-                  (send asteroid update)
-                   (send canvas draw-object asteroid dc))
-                (send game-board get-list-of-asteroids)))
+  ;;draw asteroids
+  (for-each (lambda (asteroid)
+              (send asteroid update)
+              (send canvas draw-object asteroid dc))
+            (send game-board get-list-of-asteroids)))
 
 
 ;; Keyboard actions, depends on input
@@ -203,7 +219,9 @@
       ((equal? key-tag  #\s)
        (send player move-y (send player get-speed))) 
       ((equal? key-tag  #\space)
-       (unless (not (send player can-fire?)) (fire))))))
+       (unless (not (send player can-fire?)) (fire)))
+      ((equal? key-tag 'escape)
+       (send game-board pause/play)))))
 
 ;; Fire-function when space is pressed
 (define (fire)
@@ -226,29 +244,50 @@
 (define (spawn-enemy)
   (let ((tmp (create-enemy)))
     (send tmp random-spawn-pos game-board)
-    (send game-board add-enemie tmp)))
+    (send tmp set-width (send (send tmp get-bitmap) get-width))
+    (send tmp set-height (send (send tmp get-bitmap) get-height))
+    (send game-board add-enemy tmp)))
 
 ;; Create power-up object and adds it to game board
 (define (spawn-power-up)
-  (let ((tmp (create-power-up)))
-    (send tmp random-spawn-pos game-board)
-    (send game-board add-power-up tmp)))
+  (unless (>= (length (send game-board get-list-of-power-ups)) 
+              (send game-board get-num-of-power-ups))
+    (let ((tmp (create-power-up)))
+      (send tmp random-spawn-pos game-board)
+      (send game-board add-power-up tmp))))
 
 ;; Create power-up object and adds it to game board
 (define (spawn-asteroid)
   (let ((tmp (create-asteroid)))
     (send tmp random-spawn-pos game-board)
+    (send tmp set-width (send (send tmp get-bitmap) get-width))
+    (send tmp set-height (send (send tmp get-bitmap) get-height))
     (send game-board add-asteroid tmp)))
 
+;;At collision with another object
+(define (action-when-collied)
+  
+  (for-each (lambda (power-up)
+              (unless (collision? player power-up)
+                (send player collision-action power-up)
+                (send game-board delete-power-up power-up)))
+            (send game-board get-list-of-power-ups)))
+#|
+   (for-each (lambda (asteroid)
+              (unless (collision? player asteroid)
+                (send player collision-action asteroid)))
+            (send game-board get-list-of-asteroids))
+
+   (for-each (lambda (enemy)
+              (unless (not (collision? player enemy))
+                (send game-board set-list-of-enemies (send game-board delete-enemy enemy))))
+            (send game-board get-list-of-enemies)))
+  
+|#
 ;; Instantiation of objects
 ;; ---------------------
-
-;; player
-(define player
-  (new player%
-       [_width 11]
-       [_height 11]))
-
+(send player set-x-pos (- (exact-round (/ (send game-board get-width) 2))30))
+(send player set-y-pos (- (send game-board get-height) 80))
 (send game-board add-player player)
 
 ;;canvas
@@ -273,9 +312,18 @@
 
 ;;power-up spawn timer
 (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
-(send spawn-power-up-timer start 1000 #f)
+;(send spawn-power-up-timer start 10000 #f)
 
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-(send spawn-asteroid-timer start 1000 #f)
+;(send spawn-asteroid-timer start 1000 #f)
+
+(define (check-collision)
+  (for-each (lambda (obj)
+              (unless (not (collision? player obj))
+                (send game-board set-list-of-enemies (send game-board delete-enemy obj))))
+            (send game-board get-list-of-enemies)))
+
+(define check-collision-timer (new timer% [notify-callback check-collision]))
+(send check-collision-timer start 16 #f)
 ;; ------------------

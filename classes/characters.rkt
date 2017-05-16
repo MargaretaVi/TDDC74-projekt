@@ -7,15 +7,15 @@
     (init-field
      [_height 0] ; y-axis
      [_width 0] ; x-axis
-     [_health 10]
+     [_health 50]
      [_x-pos 0] ;; states the upper left corner
      [_y-pos 0] ;; states the upper left corner
-     [_speed 3] ;; how many pixels per update
+     [_speed 1] ;; how many pixels per update
      [_can-fire #t]
-     [_cool-down 600]
+     [_cool-down 100]
      [_facing-direction 1];; facing downwards
      [_DMG 5]
-     [_DMG-roof 40]
+     [_DMG-roof 20]
      )
 
     ;; Functions that returns the class members
@@ -49,11 +49,11 @@
     ;; ------------------------------------
 
     ;; Sets the x-pos to a specific value
-    (define (set-x-pos pos)
+    (define/public (set-x-pos pos)
       (set! _x-pos pos))
 
     ;; Sets the y-pos to a specific value
-    (define (set-y-pos pos)
+    (define/public (set-y-pos pos)
       (set! _y-pos pos))
       
     ;; Calculates the new health for the character. (decreasing)
@@ -83,6 +83,7 @@
     ;;Set height
     (define/public (set-height value)
       (set! _height value))
+    
     ;; Placeholder for returning the specific bitmap
     (define/public (get-bitmap)
       (void))
@@ -91,5 +92,7 @@
     (define/public (update)
       (move-x 0)
       (move-y _speed))
-    
+
+    (define/public (set-speed val)
+      (set! _speed val))
     (super-new)))
