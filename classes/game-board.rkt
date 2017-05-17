@@ -10,8 +10,7 @@
 
 (define game-board%
   (class object%
-    
-    ;;Members of class character
+  ;;Members of class character
     (init-field
      _width
      _height
@@ -40,7 +39,7 @@
 
     ;; Increases scorevalue
     (define/public (increase-score _scorevalue)
-      (set! _score (+ _score _scorevalue)))
+      (set! _score _scorevalue))
     
     ;; Returns a list of which player that exists in the game. 
     (define/public (get-list-of-player)
@@ -157,18 +156,7 @@
             (send spawn-asteroid-timer start 2000))))
     (super-new)))
 
-(define game-window (new frame%
-                         [width 900]
-                         [height 700]
-                         [label "Space invader"]))
-                             
-(send game-window show #t)
-    
-    
-(define game-board (new game-board%
-                        [_width 900]
-                        [_height 700]
-                        [_num-of-power-ups 5]))
+
 
 ;; canvas-class for the game
 (define game-canvas%
@@ -190,8 +178,10 @@
         (send background-dc set-background "black")
         (send background-dc clear)
         (render-function this background-dc)))
+    
     (super-new)))
 
+;;---------FUNCTIONS-------------
 ;; Render function
 (define (render-function canvas dc)
   ;;Draw player
@@ -223,7 +213,6 @@
               (send canvas draw-object asteroid dc))
             (send game-board get-list-of-asteroids)))
 
-
 ;; Keyboard actions, depends on input
 (define (keyboard-input key-event)
   (let
@@ -240,43 +229,19 @@
       ((equal? key-tag  #\space)
        (when (send player can-fire?)
          (begin
-           (fire)
+           (send player fire game-board)
            (playing-sound shoot))))
       ((equal? key-tag #\p)
        (send game-board pause/play)))))
-
-;; Fire-function when space is pressed
-(define (fire)
-  (let ((type_tmp 0))
-    (if (> (send player get-DMG) 5)
-        (set! type_tmp 5)
-        (set! type_tmp 4))
-    ;; creates a projectile each and adds to list of projectiles
-    (send game-board add-projectile
-          (new projectile%
-               [_height 11]
-               [_width 11]
-               [_x-pos (+ (send player get-x-pos) (exact-round (/ (send player get-width) 2)))]
-               [_y-pos (- (send player get-y-pos) (send player get-height) 2)]
-               [_type type_tmp]
-               [_facing-direction (send player get-facing-direction)]
-               [_DMG (send player get-DMG)]))))
-
-
-;; Create enemy object and adds it to game board
-(define (spawn-enemy)
-  (let ((enemy (create-enemy)))
-    (send enemy random-spawn-pos game-board)
-    (send enemy set-width (send (send enemy get-bitmap) get-width))
-    (send enemy set-height (send (send enemy get-bitmap) get-height))
-    (send game-board add-enemy enemy)))
 
 ;; Create power-up object and adds it to game board
 (define (spawn-asteroid)
   (let ((asteroid (create-asteroid)))
     (send asteroid random-spawn-pos game-board)
-    (send asteroid set-width (send (send asteroid get-bitmap) get-width))
-    (send asteroid set-height (send (send asteroid get-bitmap) get-height))
+    (send asteroid set-width
+          (send (send asteroid get-bitmap) get-width))
+    (send asteroid set-height
+          (send (send asteroid get-bitmap) get-height))
     (send game-board add-asteroid asteroid)))
 
 ;; Create power-up object and adds it to game board
@@ -287,60 +252,106 @@
       (send tmp random-spawn-pos game-board)
       (send game-board add-power-up tmp))))
 
+;; Create enemy object and adds it to game board
+(define (spawn-enemy)
+  (let ((enemy (create-enemy)))
+    (send enemy random-spawn-pos game-board)
+    (send enemy set-width (send (send enemy get-bitmap) get-width))
+    (send enemy set-height (send (send enemy get-bitmap) get-height))
+    (loop-check-apply enemy spawn-enemy)
+    (send game-board add-enemy enemy)))
+
+;; Loop through and apply function
+(define (loop-check-apply subject func)
+  (for-each (lambda (enemy)
+              (when (collision? subject enemy)
+                func))
+            (send game-board get-list-of-enemies))
+  
+  (for-each (lambda (power-up)
+              (when (collision? subject power-up)
+                func))
+            (send game-board get-list-of-power-ups))
+  
+  (for-each (lambda (asteroid)
+              (when (collision? subject asteroid)
+                func))
+            (send game-board get-list-of-asteroids))
+
+  (for-each (lambda (projectile)
+              (when (collision? subject projectile)
+                func))
+              (send game-board get-list-of-projectiles)))
+
 
 ;;check interactions of object 
 (define (check-objects)
+  ;; Makes sure that player do not walk outside of game-board
   (prevent-walkning-outside player game-board)
       
   (for-each (lambda (power-up)
-              (unless (not (out-of-bounce? power-up game-board))
+              (when (out-of-bounce? power-up game-board)
                 (send game-board set-list-of-power-ups
                       (send game-board delete-power-up power-up)))
-              (unless (not (collision? player power-up))
+              (when (collision? player power-up)
                 (send player collision-action power-up)
                 (send game-board set-list-of-power-ups
                       (send game-board delete-power-up power-up))))
             (send game-board get-list-of-power-ups))
 
   (for-each (lambda (asteroid)
-              (unless (not (out-of-bounce? asteroid game-board))
+              (when (out-of-bounce? asteroid game-board)
                 (send game-board set-list-of-asteroids
                       (send game-board delete-asteroid asteroid)))
-              (unless (not (collision? player asteroid))
+              (when (collision? player asteroid)
                 (send player collision-action asteroid)
                 (send game-board set-list-of-asteroids
                       (send game-board delete-asteroid asteroid))))
             (send game-board get-list-of-asteroids))
 
   (for-each (lambda (enemy)
-              (unless (not (out-of-bounce? enemy game-board))
+              (when (out-of-bounce? enemy game-board)
                 (send game-board set-list-of-enemies
                       (send game-board delete-enemy enemy)))
-              (unless (not (collision? player enemy))
+              (when (collision? player enemy)
                 (send game-board set-list-of-enemies
                       (send game-board delete-enemy enemy))))
             (send game-board get-list-of-enemies))
 
   (for-each (lambda (projectile)
               (for-each (lambda (enemy)
-                          (unless (not (collision? projectile enemy))
+                          (when (collision? projectile enemy)
                             (send game-board set-list-of-enemies
                                   (send game-board delete-enemy enemy))
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
                         (send game-board get-list-of-enemies))
               (for-each (lambda (asteroid) 
-                          (unless (not (collision? projectile asteroid))
+                          (when (collision? projectile asteroid)
                             (send game-board set-list-of-asteroids
                                   (send game-board delete-asteroid asteroid))
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
-                          (send game-board get-list-of-asteroids)))
+                        (send game-board get-list-of-asteroids)))
             (send game-board get-list-of-projectiles)))
                           
                                   
 ;; Instantiation of objects
 ;; ---------------------
+
+(define game-window (new frame%
+                         [width 900]
+                         [height 700]
+                         [label "Space invader"]))
+                             
+(send game-window show #t)
+    
+    
+(define game-board (new game-board%
+                        [_width 900]
+                        [_height 700]
+                        [_num-of-power-ups 5]))
+
 (send player set-x-pos (- (exact-round (/ (send game-board get-width) 2))30))
 (send player set-y-pos (- (send game-board get-height) 80))
 (send game-board add-player player)
@@ -352,15 +363,14 @@
                     [paint-callback render-function]))
 
 (send canvas show #t)
-;(void (playing-sound background))
 
 ;;Uppdate canvas
-(define (refresh-canvas)
+(define (update)
   (check-objects)
   (send canvas refresh))
 
 ;;Update canvas timer
-(define update-timer (new timer% [notify-callback refresh-canvas]))                         
+(define update-timer (new timer% [notify-callback update]))                         
 (send update-timer start 32 #f)
 
 ;;Enemy spawn timer
@@ -373,6 +383,5 @@
 
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-(send spawn-asteroid-timer start 2000 #f)
-
+(send spawn-asteroid-timer start 1000 #f)
 
