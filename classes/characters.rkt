@@ -78,9 +78,13 @@
       (set-y-pos (+ _y-pos _step)))
 
     ;; Sets the variable "can-fire" to true.
-    (define/public (reset-can-fire)
+    (define/public (fireable)
       (set! _can-fire #t))
 
+    ;; Sets the variable "can-fire" to false.
+    (define/public (not-fireable)
+      (set! _can-fire #f))
+    
     ;; Set width
     (define/public (set-width value)
       (set! _width value))

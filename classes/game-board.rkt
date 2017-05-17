@@ -149,18 +149,20 @@
     (define/public (pause/play)
       (if _paused
           (begin
+            (playing-sound background)
             (send update-timer start 16)
             (set! _paused (not _paused))
             (send pause-window show #f)
-            (send update-timer stop)
+            (send player not-fireable)
             (send spawn-enemy-timer stop)
             (send spawn-power-up-timer stop)
             (send spawn-asteroid-timer stop))
           (begin
+            (stopping-sound)
             (send update-timer stop)
             (set! _paused (not _paused))
-            (send pause-window show #t)
-            (send update-timer start 16)
+            (send pause-window show #t) 
+            (send player fireable)
             (send spawn-enemy-timer start 4000)
             (send spawn-power-up-timer start 10000)
             (send spawn-asteroid-timer start 2000))))
@@ -251,7 +253,7 @@
          (begin
            (fire)
            (playing-sound shoot))))
-      ((equal? key-tag 'escape)
+      ((equal? key-tag #\p)
        (send game-board pause/play)))))
 
 ;; Fire-function when space is pressed
@@ -361,6 +363,7 @@
                     [paint-callback render-function]))
 
 (send canvas show #t)
+;(void (playing-sound background))
 
 ;;Uppdate canvas
 (define (refresh-canvas)
@@ -382,4 +385,4 @@
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
 (send spawn-asteroid-timer start 2000 #f)
-;; ------------------
+
