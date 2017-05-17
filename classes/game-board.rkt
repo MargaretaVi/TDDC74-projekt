@@ -182,7 +182,7 @@
     (super-new)))
 
 ;; Render function
-(define (render-function canvas dc game-board)
+(define (render-function canvas dc)
   ;;Draw player
   (for-each (lambda (player)
               (send canvas draw-object player dc))
