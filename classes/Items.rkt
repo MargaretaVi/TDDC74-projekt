@@ -116,7 +116,7 @@ TYPE == 6 Asteroid
          speed-bitmap)
         ((equal? (send this get-type) 3)
          health-bitmap)
-        ((equal? (send this get-type) 4)
+        ((equal? (send this get-type) 6)
          asteroid-bitmap)))
 
     ;;Get speed
@@ -144,7 +144,7 @@ TYPE == 6 Asteroid
     (new item%
          [_height 11]
          [_width 11]
-         [_type 4]))
+         [_type 6]))
 
 ;Random number between 1 and 3 to decide type      
 (define (random-from-to start stop)
@@ -159,14 +159,6 @@ TYPE == 6 Asteroid
      _width
      _facing-direction
      _DMG)  
-    (inherit
-      set-width
-      set-height
-      set-value)
-    (set-height 25)
-    (set-width 15)
-    (set-value 1)
-    
 
     
     ;; projectile bitmap

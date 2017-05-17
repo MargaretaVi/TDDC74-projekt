@@ -7,15 +7,17 @@
     (init-field
      [_height 0] ; y-axis
      [_width 0] ; x-axis
-     [_health 50]
+     [_health 3]
      [_x-pos 0] ;; states the upper left corner
      [_y-pos 0] ;; states the upper left corner
      [_speed 1] ;; how many pixels per update
      [_can-fire #t]
      [_cool-down 100]
      [_facing-direction 1];; facing downwards
-     [_DMG 5]
-     [_DMG-roof 20]
+     [_DMG 1]
+     [_DMG-roof 5]
+     [_speed-roof 30]
+     [_health-roof 30]
      [_alive #t]
      )
 
@@ -96,6 +98,15 @@
       (move-x 0)
       (move-y _speed))
 
+    ;; Set speed
     (define/public (set-speed val)
       (set! _speed val))
+    
+    ;; Set DMG
+    (define/public (set-DMG val)
+      (set! _DMG val))
+
+    ;; Set health
+    (define/public (set-health val)
+      (set! _health val))
     (super-new)))

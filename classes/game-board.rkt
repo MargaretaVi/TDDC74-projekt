@@ -6,7 +6,19 @@
 (require "enemie.rkt")
 (require "Items.rkt")
 (require "key-handler.rkt")
+(require rsound)
 
+;; ----sound----
+(define shoot (rs-read "../music/bullet.wav"))
+(define background (rs-read "../music/Defense_Line.wav"))
+
+(define (playing-sound sound-path)
+  (play sound-path))
+
+(define (stopping-sound)
+  (stop))
+                      
+;;------
 (define game-board%
   (class object%
     
@@ -139,11 +151,19 @@
           (begin
             (send update-timer start 16)
             (set! _paused (not _paused))
-            (send pause-window show #f))
+            (send pause-window show #f)
+            (send update-timer stop)
+            (send spawn-enemy-timer stop)
+            (send spawn-power-up-timer stop)
+            (send spawn-asteroid-timer stop))
           (begin
             (send update-timer stop)
             (set! _paused (not _paused))
-            (send pause-window show #t))))
+            (send pause-window show #t)
+            (send update-timer start 16)
+            (send spawn-enemy-timer start 4000)
+            (send spawn-power-up-timer start 10000)
+            (send spawn-asteroid-timer start 2000))))
     (super-new)))
 
 (define game-window (new frame%
@@ -227,7 +247,10 @@
       ((equal? key-tag  #\s)
        (send player move-y (send player get-speed))) 
       ((equal? key-tag  #\space)
-       (unless (not (send player can-fire?)) (fire)))
+       (when (send player can-fire?)
+         (begin
+           (fire)
+           (playing-sound shoot))))
       ((equal? key-tag 'escape)
        (send game-board pause/play)))))
 
