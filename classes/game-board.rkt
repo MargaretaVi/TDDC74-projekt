@@ -182,7 +182,7 @@
     (super-new)))
 
 ;; Render function
-(define (render-function canvas dc)
+(define (render-function canvas dc game-board)
   ;;Draw player
   (for-each (lambda (player)
               (send canvas draw-object player dc))
@@ -248,13 +248,22 @@
                [_facing-direction (send player get-facing-direction)]
                [_DMG (send player get-DMG)]))))
 
+
 ;; Create enemy object and adds it to game board
 (define (spawn-enemy)
-  (let ((tmp (create-enemy)))
-    (send tmp random-spawn-pos game-board)
-    (send tmp set-width (send (send tmp get-bitmap) get-width))
-    (send tmp set-height (send (send tmp get-bitmap) get-height))
-    (send game-board add-enemy tmp)))
+  (let ((enemy (create-enemy)))
+    (send enemy random-spawn-pos game-board)
+    (send enemy set-width (send (send enemy get-bitmap) get-width))
+    (send enemy set-height (send (send enemy get-bitmap) get-height))
+    (send game-board add-enemy enemy)))
+
+;; Create power-up object and adds it to game board
+(define (spawn-asteroid)
+  (let ((asteroid (create-asteroid)))
+    (send asteroid random-spawn-pos game-board)
+    (send asteroid set-width (send (send asteroid get-bitmap) get-width))
+    (send asteroid set-height (send (send asteroid get-bitmap) get-height))
+    (send game-board add-asteroid asteroid)))
 
 ;; Create power-up object and adds it to game board
 (define (spawn-power-up)
@@ -264,13 +273,6 @@
       (send tmp random-spawn-pos game-board)
       (send game-board add-power-up tmp))))
 
-;; Create power-up object and adds it to game board
-(define (spawn-asteroid)
-  (let ((tmp (create-asteroid)))
-    (send tmp random-spawn-pos game-board)
-    (send tmp set-width (send (send tmp get-bitmap) get-width))
-    (send tmp set-height (send (send tmp get-bitmap) get-height))
-    (send game-board add-asteroid tmp)))
 
 ;;check interactions of object 
 (define (check-objects)
@@ -339,15 +341,16 @@
 
 ;;Uppdate canvas
 (define (refresh-canvas)
+  (check-objects)
   (send canvas refresh))
 
 ;;Update canvas timer
 (define update-timer (new timer% [notify-callback refresh-canvas]))                         
-(send update-timer start 16 #f)
+(send update-timer start 32 #f)
 
 ;;Enemy spawn timer
 (define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
-(send spawn-enemy-timer start 1000 #f)
+(send spawn-enemy-timer start 4000 #f)
 
 ;;power-up spawn timer
 (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
@@ -355,9 +358,5 @@
 
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-(send spawn-asteroid-timer start 1000 #f)
-
-;;collision timer
-(define check-object-timer (new timer% [notify-callback check-objects]))
-(send check-object-timer start 16 #f)
+(send spawn-asteroid-timer start 2000 #f)
 ;; ------------------
