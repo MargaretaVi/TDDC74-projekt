@@ -6,19 +6,8 @@
 (require "enemie.rkt")
 (require "Items.rkt")
 (require "key-handler.rkt")
-(require rsound)
+(require "sound.rkt")
 
-;; ----sound----
-(define shoot (rs-read "../music/bullet.wav"))
-(define background (rs-read "../music/Defense_Line.wav"))
-
-(define (playing-sound sound-path)
-  (play sound-path))
-
-(define (stopping-sound)
-  (stop))
-                      
-;;------
 (define game-board%
   (class object%
     
@@ -385,4 +374,5 @@
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
 (send spawn-asteroid-timer start 2000 #f)
+
 
