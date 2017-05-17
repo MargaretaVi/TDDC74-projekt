@@ -242,15 +242,21 @@
           (send (send asteroid get-bitmap) get-width))
     (send asteroid set-height
           (send (send asteroid get-bitmap) get-height))
+    (loop-check-apply asteroid spawn-asteroid)
     (send game-board add-asteroid asteroid)))
 
 ;; Create power-up object and adds it to game board
 (define (spawn-power-up)
   (unless (>= (length (send game-board get-list-of-power-ups)) 
               (send game-board get-num-of-power-ups))
-    (let ((tmp (create-power-up)))
-      (send tmp random-spawn-pos game-board)
-      (send game-board add-power-up tmp))))
+    (let ((power-up (create-power-up)))
+      (send power-up random-spawn-pos game-board)
+      (send power-up set-width
+            (send (send power-up get-bitmap) get-width))
+      (send power-up set-height
+            (send (send power-up get-bitmap) get-height))
+      (loop-check-apply power-up spawn-power-up)
+      (send game-board add-power-up power-up))))
 
 ;; Create enemy object and adds it to game board
 (define (spawn-enemy)
@@ -375,7 +381,7 @@
 
 ;;Enemy spawn timer
 (define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
-(send spawn-enemy-timer start 4000 #f)
+(send spawn-enemy-timer start 1000 #f)
 
 ;;power-up spawn timer
 (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
