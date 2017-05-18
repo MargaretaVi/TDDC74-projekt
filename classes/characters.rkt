@@ -53,6 +53,9 @@
       _speed)
     (define/public (alive?)
       _alive)
+
+    (define/public (get-cool-down)
+      _cool-down)
     ;; ------------------------------------
 
     ;; Sets the x-pos to a specific value
@@ -115,6 +118,10 @@
     ;; Set health
     (define/public (set-health val)
       (set! _health val))
+
+    ;; Set cool down
+    (define/public (set-cool-down val)
+      (set! _cool-down val))
 
     ;; Decides what happens when collided with an object
     (define/public (collision-action object)

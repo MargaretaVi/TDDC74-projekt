@@ -6,34 +6,17 @@
   (class character%
     (super-new)
     (inherit-field
-     _height
-     _width
-     _x-pos
-     _y-pos
-     _DMG
-     _DMG-roof
-     _speed-roof
-     _health-roof
-     _speed
-     _health
-     _can-fire
-     _alive
-     _facing-direction)
-    (inherit move-x
-             move-y
-             set-height
-             set-width
-             set-x-pos
-             set-y-pos
-             get-width
-             get-height
-             set-speed
-             set-health
-             set-DMG)
+     _height _width _x-pos _y-pos _DMG _DMG-roof _speed-roof
+     _health-roof _speed _health _can-fire _alive _facing-direction
+     _cool-down)
+    (inherit move-x move-y set-height set-width  set-x-pos
+             set-y-pos get-width get-height set-speed
+             set-health set-DMG set-cool-down)
    
     (set! _facing-direction -1)
-    (set-speed _speed-roof)
+    (set-speed 20)
     (set-health _health-roof)
+    (set-cool-down 500)
 
     ;; Type == 3 , DMG
     ;; Type == 4 , SPEED

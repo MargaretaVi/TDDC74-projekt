@@ -230,6 +230,8 @@
        (when (send player can-fire?)
          (begin
            (send player fire game-board)
+           (send player not-fireable)
+           (send shoot-timer start (send player get-cool-down) #t)
            (playing-sound shoot))))
       ((equal? key-tag #\p)
        (send game-board pause/play)))))
@@ -242,8 +244,7 @@
           (send (send asteroid get-bitmap) get-width))
     (send asteroid set-height
           (send (send asteroid get-bitmap) get-height))
-    (loop-check-apply asteroid spawn-asteroid)
-    (send game-board add-asteroid asteroid)))
+    (loop-check-apply asteroid collision? spawn-asteroid (send game-board add-asteroid asteroid))))
 
 ;; Create power-up object and adds it to game board
 (define (spawn-power-up)
@@ -255,8 +256,7 @@
             (send (send power-up get-bitmap) get-width))
       (send power-up set-height
             (send (send power-up get-bitmap) get-height))
-      (loop-check-apply power-up spawn-power-up)
-      (send game-board add-power-up power-up))))
+      (loop-check-apply power-up collision? spawn-power-up (send game-board add-power-up power-up)))))
 
 ;; Create enemy object and adds it to game board
 (define (spawn-enemy)
@@ -264,31 +264,67 @@
     (send enemy random-spawn-pos game-board)
     (send enemy set-width (send (send enemy get-bitmap) get-width))
     (send enemy set-height (send (send enemy get-bitmap) get-height))
-    (loop-check-apply enemy spawn-enemy)
-    (send game-board add-enemy enemy)))
+    (loop-check-apply enemy collision? spawn-enemy (send game-board add-enemy enemy))))
 
 ;; Loop through and apply function
-(define (loop-check-apply subject func)
+(define (loop-check-apply subject criteria func1 func2)
+  ;Check against enemy
+   (for-each (lambda (enemy)
+              (if (criteria subject enemy)
+                  func1
+                  ;Check against power-ups
+                  (for-each (lambda (power-up)
+                              (if (criteria subject enemy)
+                                  func1
+                                  ; Check against asteroid
+                                  (for-each (lambda (asteroid)
+                                              (if (criteria subject enemy)
+                                                  func1
+                                                  ; Check against projectiles
+                                                  (for-each (lambda (projectile)
+                                                              (if (criteria subject enemy)
+                                                                  func1
+                                                                  func2))
+                                                            (send game-board get-list-of-projectiles))))
+                                              (send game-board get-list-of-asteroids))))
+                            (send game-board get-list-of-power-ups))))
+             (send game-board get-list-of-enemies)))
+                                                  
+#|
   (for-each (lambda (enemy)
-              (when (collision? subject enemy)
-                func))
+              (if (criteria subject enemy)
+                  func1
+                  func2))
             (send game-board get-list-of-enemies))
-  
+
   (for-each (lambda (power-up)
-              (when (collision? subject power-up)
-                func))
+              (if (criteria subject power-up)
+                  func1
+                  func2))
             (send game-board get-list-of-power-ups))
   
   (for-each (lambda (asteroid)
-              (when (collision? subject asteroid)
-                func))
+              (if (criteria subject asteroid)
+                  func1
+                  func2))
             (send game-board get-list-of-asteroids))
 
   (for-each (lambda (projectile)
-              (when (collision? subject projectile)
-                func))
-              (send game-board get-list-of-projectiles)))
+              (if (criteria subject projectile)
+                  func1
+                  func2))
+            (send game-board get-list-of-projectiles)))
+|#
+;;Check if a object fullfills a 'criteria' against a whole list
+;; and then take appropriate actions
 
+(define (cross-ref-list subject criteria func1 func2 list)
+   (for-each (lambda (object)
+              (if (criteria subject subject)
+                  func1
+                  func2))
+            list))
+  
 
 ;;check interactions of object 
 (define (check-objects)
@@ -375,13 +411,16 @@
   (check-objects)
   (send canvas refresh))
 
+(define (set-fire)
+  (send player fireable))
+
 ;;Update canvas timer
 (define update-timer (new timer% [notify-callback update]))                         
 (send update-timer start 32 #f)
 
 ;;Enemy spawn timer
 (define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
-(send spawn-enemy-timer start 1000 #f)
+(send spawn-enemy-timer start 2000 #f)
 
 ;;power-up spawn timer
 (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
@@ -389,5 +428,7 @@
 
 ;;asteroid spawn timer
 (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-(send spawn-asteroid-timer start 1000 #f)
+(send spawn-asteroid-timer start 4000 #f)
 
+;Make sure that player cannot spam shoots
+(define shoot-timer (new timer% [notify-callback set-fire]))
