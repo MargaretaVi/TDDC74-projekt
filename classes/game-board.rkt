@@ -132,7 +132,18 @@
                              [callback (lambda (button event) (pause/play))]
                              [label "Play"]))
     (send play-button show #t)
-    
+
+    (define dead-window (new dialog%
+                             [parent game-window]
+                             [label "Death menu"]))
+
+    (define dead-button (new button%
+                             [parent dead-window]
+                             [callback (lambda (button event) (exit))]
+                             [label "You and your dogs are dead (loser), click here for a surprise!"]))
+    (send dead-button show #t)
+
+                         
     ;;Pause function
     (define/public (pause/play)
       (if _paused
@@ -154,8 +165,15 @@
             (send spawn-enemy-timer start 4000)
             (send spawn-power-up-timer start 10000)
             (send spawn-asteroid-timer start 2000))))
-    (super-new)))
 
+    (define/public (game-over)
+      (if (not (send player alive?))
+          (begin
+            (send dead-window show #t))
+          (void)))
+
+    
+    (super-new)))
 
 
 ;; canvas-class for the game
@@ -225,7 +243,9 @@
       ((equal? key-tag #\w)
        (send player move-y (- 0 (send player get-speed)))) 
       ((equal? key-tag  #\s)
-       (send player move-y (send player get-speed))) 
+       (send player move-y (send player get-speed)))
+      ((equal? key-tag #\m)
+       (stopping-sound))
       ((equal? key-tag  #\space)
        (when (send player can-fire?)
          (begin
@@ -373,6 +393,7 @@
 ;;Uppdate canvas
 (define (update)
   (check-objects)
+  (send game-board game-over)
   (send canvas refresh))
 
 ;;Update canvas timer
