@@ -71,6 +71,8 @@ TYPE == 6 Asteroid
     (define/public (get-height)
       _height)
 
+    (define/public (get-facing-direction)
+      _facing-direction)
     ; set width
     (define/public (set-height num)
       (set! _height num))
@@ -158,7 +160,9 @@ TYPE == 6 Asteroid
      _height
      _width
      _facing-direction
-     _DMG)  
+     _DMG)
+    (inherit
+     get-type)  
 
     
     ;; projectile bitmap
@@ -168,8 +172,13 @@ TYPE == 6 Asteroid
     (define better-projectile-bitmap
       (read-bitmap "../images/better-proj.png"))
 
+        
+    (define enemie-projectile-bitmap
+      (read-bitmap "../images/enemie-proj.png"))
+
     (define/override (get-bitmap)
-      (if (>= _DMG 40)
-          better-projectile-bitmap
-          normal-projectile-bitmap))))
+      (cond
+      [(equal? _facing-direction 1) enemie-projectile-bitmap]
+      [(>= _DMG 40) better-projectile-bitmap]
+      [else normal-projectile-bitmap]))))
       

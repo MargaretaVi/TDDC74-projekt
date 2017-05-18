@@ -10,10 +10,13 @@
         (_x2-pos (send object2 get-x-pos))
         (_y2-pos (send object2 get-y-pos)) 
         (_width2 (send object2 get-width))
-        (_height2 (send object2 get-height)))
+        (_height2 (send object2 get-height))
+        (_facing-direction1 (send object1 get-facing-direction))
+        (_facing-direction2 (send object2 get-facing-direction)))
     
     (and (< _x1-pos (+ _x2-pos _width2)) (> (+ _x1-pos _width1) _x2-pos)
-         (< _y1-pos (+ _y2-pos _height2)) (> (+ _height1 _y1-pos) _y2-pos))))
+         (< _y1-pos (+ _y2-pos _height2)) (> (+ _height1 _y1-pos) _y2-pos)
+         (not (equal? _facing-direction1 _facing-direction2)))))
 
 ;; is object outside of the game-board?
 (define (out-of-bounce? object game-board)

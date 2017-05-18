@@ -21,6 +21,7 @@
      [_speed-roof 30]
      [_health-roof 30]
      [_alive #t]
+     [_type 0]
      )
 
     ;; Functions that returns the class members
@@ -56,6 +57,10 @@
 
     (define/public (get-cool-down)
       _cool-down)
+
+    ;; type here is either 0-player ,1-normal enemie, 2-boss
+    (define/public (get-type)
+      _type)
     ;; ------------------------------------
 
     ;; Sets the x-pos to a specific value
@@ -123,6 +128,9 @@
     (define/public (set-cool-down val)
       (set! _cool-down val))
 
+    (define/public (set-facing-direction val)
+      (set! _facing-direction val))
+
     ;; Decides what happens when collided with an object
     (define/public (collision-action object)
       (cond
@@ -152,10 +160,10 @@
         ;; creates a projectile each and adds to list of projectiles
         (send game-board add-projectile
               (new projectile%
-                   [_height 11]
-                   [_width 11]
+                   [_height 3]
+                   [_width 7]
                    [_x-pos (+ _x-pos (exact-round (/ _width 2)))]
-                   [_y-pos (- _y-pos (/ _height 2))]
+                   [_y-pos (+ _y-pos (* _facing-direction (/ _height 2)))]
                    [_type type_tmp]
                    [_facing-direction _facing-direction]
                    [_DMG _DMG]))))

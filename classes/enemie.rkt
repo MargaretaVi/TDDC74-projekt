@@ -1,23 +1,22 @@
 #lang racket/gui
 (provide enemie% create-enemy)
 (require "characters.rkt")
+(require "Items.rkt")
 
 (define enemie%
   (class character%
     (inherit-field
      _x-pos
      _y-pos
-     _speed)
+     _speed
+     _type)
     (inherit
       move-y
-      move-x)
+      move-x
+      get-type)
     (init-field
-     [_scorevalue 0]
-     [_type 0])
-    ;; type here is either 0 or 1, indicating if it is a normal enemy or a boss 
+     [_scorevalue 0])
 
-    (define/public (get-type)
-      _type)
     
     ;; Creates a random spawn point for the enemie, 
     (define/public (random-spawn-pos game-board)
