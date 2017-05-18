@@ -22,7 +22,9 @@ _type:
 Type == 3 , DMG
 Type == 4 , SPEED
 Type == 5 ; HEALTH
-TYPE == 6 Asteroid
+TYPE == 6  Asteroid
+TYPE == 7 projectile (normal)
+Type == 8 projectile (better)
 
 |#
         
@@ -160,11 +162,11 @@ TYPE == 6 Asteroid
      _height
      _width
      _facing-direction
-     _DMG)
+     _DMG
+     _type)
     (inherit
-     get-type)  
+     set-type)
 
-    
     ;; projectile bitmap
     (define normal-projectile-bitmap
       (read-bitmap "../images/normal-proj.bmp"))
@@ -179,6 +181,6 @@ TYPE == 6 Asteroid
     (define/override (get-bitmap)
       (cond
       [(equal? _facing-direction 1) enemie-projectile-bitmap]
-      [(>= _DMG 40) better-projectile-bitmap]
+      [(equal? _type 8) better-projectile-bitmap]
       [else normal-projectile-bitmap]))))
       

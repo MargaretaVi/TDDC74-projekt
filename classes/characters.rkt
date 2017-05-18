@@ -155,8 +155,8 @@
     (define/public (fire game-board)
       (let ((type_tmp 0))
         (if (> _DMG 5)
-            (set! type_tmp 5)
-            (set! type_tmp 4))
+            (set! type_tmp 8)
+            (set! type_tmp 7))
         ;; creates a projectile each and adds to list of projectiles
         (send game-board add-projectile
               (new projectile%

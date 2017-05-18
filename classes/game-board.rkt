@@ -333,10 +333,11 @@
                 
             (send game-board get-list-of-projectiles)))
 
-;; Randoms out if enemie should shoot
+;; Random if enemie should shoot
 (define (shoot-enemy)
   (for-each (lambda (enemy)
-              (send enemy fire game-board)) 
+              (when (equal? (random 5) 1)
+                (send enemy fire game-board))) 
             (send game-board get-list-of-enemies)))
                 
                                   

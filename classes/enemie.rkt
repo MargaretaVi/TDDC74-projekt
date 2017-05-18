@@ -9,7 +9,11 @@
      _x-pos
      _y-pos
      _speed
-     _type)
+     _type
+     _width
+     _height
+     _DMG
+     _facing-direction)
     (inherit
       move-y
       move-x
@@ -48,7 +52,20 @@
       (if (equal? _type 0)
           enemie-bitmap
           boss-bitmap))
-    
+
+    (define/override (fire game-board)
+      ;; creates a projectile each and adds to list of projectiles
+      (send game-board add-projectile
+            (new projectile%
+                 [_height 3]
+                 [_width 7]
+                 [_x-pos (+ _x-pos (exact-round (/ _width 2)))]
+                 [_y-pos (+ _y-pos _height 3)]
+                 [_facing-direction _facing-direction]
+                 [_speed (+ _speed 1)]
+                 [_type 7]
+                 [_DMG _DMG])))
+
     (super-new)))
 
 ;;Enemie-spawner
