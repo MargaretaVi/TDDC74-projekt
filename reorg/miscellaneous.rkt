@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/gui
 (provide (all-defined-out))
 
 ;; Randomizer that gives a value between an intervall
@@ -47,5 +47,27 @@
       ((< _obj-y-pos 0) (send player set-y-pos 0))
       ((> _obj-x-pos _width) (send player set-x-pos _width))
       ((> _obj-y-pos _height) (send player set-y-pos _height)))))
-    
-    
+
+;; Creates a random spawn point for object (x and y)
+(define (random-x-pos game-board object)
+  (random-from-to 0 (- (send game-board get-width) (send object get-width))))
+
+(define (random-y-pos game-board)
+  (random-from-to 0 (exact-round (* (send game-board get-height) 0.01))))
+
+
+;; Creates a new object from input class
+(define (create-obj game-board class specification)
+  (let ((new-obj (new class)))
+    (if (equal? specification 'middle)
+        (begin
+          (send new-obj set-x-pos
+                (- (exact-round (/ (send game-board get-width) 2)) 30))
+          (send new-obj set-y-pos (- (send game-board get-height) 80)))
+        (begin
+          (send new-obj set-x-pos (random-x-pos game-board new-obj))
+          (send new-obj set-y-pos (random-y-pos game-board))))
+    (send new-obj set-width (send (send new-obj get-bitmap) get-width))
+    (send new-obj set-height (send (send new-obj get-bitmap) get-height))
+    new-obj))
+

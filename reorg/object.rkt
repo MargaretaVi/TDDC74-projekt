@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/gui
 (require "miscellaneous.rkt")
 
 (provide game-object%)
@@ -12,15 +12,15 @@
      [_x-pos 0] [_y-pos 0]
      [_speed 1]
      [_facing-direction 1] ;; facing downwards
-     [_DMG 1]
+     [_DMG 0]
      [_alive #t]
      [_can-fire #f]
      [_cool-down 0]
      [_health-roof 10]
      [_speed-roof 10]
-     [_DMG-roof 10]
+     [_DMG-roof 10] ; Check so that the same value is in item.rkt player projectile
      [_value 0])
-     ;; ----- Getters ----------   
+     ;; ----- Getters --------   
     (define/public (get-height)
       _height)
     
@@ -62,6 +62,9 @@
 
     (define/public (get-DMG-roof)
       _DMG-roof)
+
+    (define/public (get-value)
+      _value)
 
     ;; ------ setters ---------------
 
@@ -126,11 +129,6 @@
     (define/public (update)
       (move-x 0)
       (move-y _speed))
-
-    ;; Creates a random spawn point for object
-    (define/public (random-spawn-pos game-board)
-      (set-x-pos (random-from-to 0 (- (send game-board get-width) (send this get-width))))
-      (set-y-pos (random-from-to 0 (exact-round (* (send game-board get-height) 0.01)))))
     
     ;; Placeholder for functions
     (define/public (get-bitmap)

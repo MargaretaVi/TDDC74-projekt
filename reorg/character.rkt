@@ -1,24 +1,30 @@
 #lang racket/gui
-(provide player%)
+(provide player% enemy% boss%)
 (require "object.rkt")
 (require "item.rkt")
+(require "miscellaneous.rkt")
 
 (define player%
   (class game-object%
     (super-new)
     (inherit-field
-     _DMG-roof _health-roof
+     _DMG _DMG-roof
      _x-pos _y-pos
      _width _height
-     _facing-direction _speed _DMG)
+     _health  _health-roof
+     _facing-direction _speed
+     _alive)
     (inherit set-height set-width set-speed set-health
-             set-cool-down set-facing-direction)
+             set-cool-down set-facing-direction set-DMG
+             fireable)
     
     ; --- starting values
     (set-facing-direction -1)
     (set-speed 20)
     (set-health _health-roof)
     (set-cool-down 1000)
+    (set-DMG 5)
+    (fireable)
 
     ;; player bitmap
     (define player-bitmap
@@ -35,14 +41,36 @@
       ;; creates a projectile each and adds to list of projectiles
       (send game-board add-projectile
             (new player-projectile%
-                 [_height 3] [_width 7]
                  [_x-pos (+ _x-pos (exact-round (/ _width 2)))]
                  [_y-pos (+ _y-pos _height 3)]
                  [_facing-direction _facing-direction]
-                 [_speed (+ _speed 1)]
+                 [_speed (* _facing-direction (exact-round (* _speed 0.1)))]
                  [_DMG _DMG])))
 
-    ))
+     ;; Decides what happens when collided with an object
+    (define/public (collision-action object)
+      (cond
+        [(or (is-a? object enemy%)
+             (is-a? object boss%)
+             (is-a? object asteroid%)
+             (is-a? object boss-projectile%)
+             (is-a? object enemy-projectile%))
+         (begin
+           (set! _health (- _health 1))
+           (unless (not (< _health 0))
+             (set! _alive #f)))]    
+        [(is-a? object DMG-boost%)
+         (if (> (send this get-DMG) _DMG-roof)
+             (set-DMG _DMG-roof)
+             (set-DMG (+ (send this get-DMG)
+                         (send object get-value))))]
+        [(is-a? object speed-boost%)
+         (set-speed (+ _speed (send object get-value)))]
+        [(is-a? object health-boost%)
+         (if (> (send this get-health) _health-roof)
+             (set-health _health-roof)
+             (set-health (+ (send this get-health)
+                         (send object get-value))))]))))
 
 
 
@@ -54,7 +82,7 @@
      _x-pos _y-pos
      _width _height
      _facing-direction _speed _DMG)
-    (inherit move-x move-y random-spawn-pos set-height set-width)
+    (inherit move-x move-y set-height set-width)
     
     ;; Enemie bitmap
     (define enemie-bitmap
@@ -71,17 +99,11 @@
       ;; creates a projectile each and adds to list of projectiles
       (send game-board add-projectile
             (new enemy-projectile%
-                 [_height 3]
-                 [_width 7]
                  [_x-pos (+ _x-pos (exact-round (/ _width 2)))]
                  [_y-pos (+ _y-pos _height 3)]
-                 [_facing-direction _facing-direction]
+                 [_facing-direction  _facing-direction]
                  [_speed (+ _speed 1)]
-                 [_type 7]
-                 [_DMG _DMG])))
-
-    ))
-    
+                 [_DMG _DMG])))))
 
 (define boss%
   (class game-object%
@@ -92,7 +114,7 @@
      _width _height
      _facing-direction _speed _DMG)
 
-    (inherit move-x move-y random-spawn-pos set-height set-width)
+    (inherit move-x move-y set-height set-width)
     ;; boss bitmap
     (define boss-bitmap
       (read-bitmap  "../images/boss.png"))
@@ -108,12 +130,8 @@
       ;; creates a projectile each and adds to list of projectiles
       (send game-board add-projectile
             (new enemy-projectile%
-                 [_height 3]
-                 [_width 7]
                  [_x-pos (+ _x-pos (exact-round (/ _width 2)))]
                  [_y-pos (+ _y-pos _height 3)]
                  [_facing-direction _facing-direction]
                  [_speed (+ _speed 1)]
-                 [_type 7]
-                 [_DMG _DMG])))
-    ))
+                 [_DMG _DMG])))))
