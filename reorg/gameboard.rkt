@@ -1,6 +1,6 @@
 #lang racket/gui
 (provide gameboard%)
-(require "../classes/sound.rkt")
+(require "sound.rkt")
 (require "miscellaneous.rkt")
 (require "item.rkt")
 (require "character.rkt")
