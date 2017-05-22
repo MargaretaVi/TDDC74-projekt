@@ -122,7 +122,7 @@
 (define asteroid%
   (class game-object%
     (super-new)
-    (inherit set-height set-width set-value)
+    (inherit set-height set-width set-value set-DMG)
 
     ;; asteroid bitmap
     (define asteroid-bitmap (read-bitmap "../images/asteroid.bmp"))
@@ -131,7 +131,8 @@
     
     (define/override (get-bitmap)
       asteroid-bitmap)
-    (set-value 5)))
+    (set-value 5)
+    (set-DMG 1)))
     
 
 

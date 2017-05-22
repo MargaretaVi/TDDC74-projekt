@@ -76,9 +76,6 @@
 
     (define/public (set-health _val)
       (set! _health _val))
-
-    (define/public (not-alive)
-      (set! _alive #f))
     
     (define/public (set-x-pos _pos)
       (set! _x-pos _pos))
@@ -92,8 +89,8 @@
     (define/public (set-facing-direction _val)
       (set! _facing-direction _val))
     
-    (define/public (set-DMG _value)
-      (set! _DMG _value))
+    (define/public (set-DMG _val)
+      (set! _DMG _val))
 
     (define/public (set-alive _val)
       (set! _alive _val))
@@ -119,6 +116,7 @@
     (define/public (set-value _val)
       (set! _value _val))
 
+
     ;; ------ Functions --------------
     ;; Moves the object in the x-direction
     (define/public (move-x _step)
@@ -131,7 +129,9 @@
     ;; Update position
     (define/public (update)
       (move-x 0)
-      (move-y _speed))
+      (move-y _speed)
+      (when (> _health _health-roof)
+        (set-health _health-roof)))
     
     ;; Placeholder for functions
     (define/public (get-bitmap)

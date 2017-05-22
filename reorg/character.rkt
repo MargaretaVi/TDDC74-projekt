@@ -17,7 +17,7 @@
      _alive _value)
     (inherit set-height set-width set-speed set-health
              set-cool-down set-facing-direction set-DMG
-             fireable get-height set-value) 
+             fireable get-height set-value set-alive) 
     
     ; --- starting values
     (set-facing-direction -1)
@@ -57,10 +57,10 @@
              (is-a? object boss-projectile%)
              (is-a? object enemy-projectile%))
          (begin
-           (set! _health (- _health (send object get-DMG)))
+           (set-health (- _health (send object get-DMG)))
            (set-value (+ _value (send object get-value)))
            (when (< _health 1)
-             (set! _alive #f)))]    
+             (set-alive #f)))]    
         [(is-a? object DMG-boost%)
          (begin
            (set-value (+ _value (send object get-value)))
