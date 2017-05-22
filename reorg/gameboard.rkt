@@ -186,12 +186,14 @@
 (define (render-function canvas dc)
   
   ;Display health
+  (send dc draw-text "Health" 30 15)
   (send dc draw-text (number->string (send player get-health)) 30 30)
   (send dc set-text-foreground "white")
 
   ;display score
+  (send dc draw-text "Score" (- (send game-board get-width) 70) 15)
   (send dc draw-text (number->string (send player get-value))
-        (- (send game-board get-width) 40) 30)
+        (- (send game-board get-width) 70) 30)
   
   ;;Draw player
   (for-each (lambda (player)
@@ -350,7 +352,10 @@
                       (send game-board delete-projectile projectile)))
               ;; Enemy collision
               (for-each (lambda (enemy)
-                          (when (collision? projectile enemy)
+                          (when (and (collision? projectile enemy)
+                                     (equal? (send projectile get-facing-direction) -1))
+                            (send player set-value (+ (send player get-value)
+                                                      (send enemy get-value)))
                             (send game-board set-list-of-enemies
                                   (send game-board delete-enemy enemy))
                             (send game-board set-list-of-projectiles
@@ -371,16 +376,17 @@
                                   (send game-board delete-projectile projectile))))
                         (send game-board get-list-of-bosses))
               ;; Asteroid collision
-              (for-each (lambda (asteroid) 
-                          (when (collision? projectile asteroid)
+              (for-each (lambda (asteroid)
+                          (when (and (collision? projectile asteroid)
+                                     (equal? (send projectile get-facing-direction) -1))
+                            (send player set-value (+ (send player get-value)
+                                                        (send asteroid get-value)))
                             (send game-board set-list-of-asteroids
                                   (send game-board delete-asteroid asteroid))
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
                         (send game-board get-list-of-asteroids)))
             (send game-board get-list-of-projectiles)))
-
-
 
   ;; Random if enemie should shoot
   (define (shoot-enemy)
@@ -477,7 +483,7 @@
 
   ;;Enemy spawn timer
   (define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
-  (send spawn-enemy-timer start 700 #f)
+  (send spawn-enemy-timer start 1400 #f)
 
   ;;Power-up spawn timer
   (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
@@ -485,7 +491,7 @@
 
   ;;Asteroid spawn timer
   (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-  (send spawn-asteroid-timer start 500 #f)
+  (send spawn-asteroid-timer start 1000 #f)
 
   ;Make sure that player cannot spam shoots
   (define player-shoot-timer (new timer% [notify-callback set-fire]))

@@ -91,10 +91,12 @@
      _x-pos _y-pos
      _width _height
      _facing-direction _speed _DMG)
-    (inherit move-x move-y set-height set-width set-DMG)
+    (inherit move-x move-y set-height set-width set-DMG
+             set-value)
 
 
     (set-DMG 1)
+    (set-value 7)
     ;; Enemie bitmap
     (define enemie-bitmap
       (read-bitmap "../images/enemie.png"))
@@ -128,11 +130,12 @@
      _facing-direction _speed _DMG)
 
     (inherit move-x move-y set-height set-width
-             set-health set-DMG set-speed)
+             set-health set-DMG set-speed set-value)
 
     (set-health 10)
     (set-DMG 5)
     (set-speed 1)
+    (set-value 15)
     ;; boss bitmap
     (define boss-bitmap
       (read-bitmap  "../images/boss.png"))
