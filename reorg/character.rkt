@@ -57,7 +57,7 @@
              (is-a? object enemy-projectile%))
          (begin
            (set! _health (- _health 1))
-           (unless (not (< _health 0))
+           (when (< _health 1)
              (set! _alive #f)))]    
         [(is-a? object DMG-boost%)
          (if (> (send this get-DMG) _DMG-roof)

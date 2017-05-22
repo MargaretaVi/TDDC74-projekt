@@ -81,16 +81,16 @@
       (remove player _list-of-player))
 
     (define/public (delete-enemy enemy)
-      (remove enemy _list-of-enemies ))
+      (remove enemy _list-of-enemies))
 
     (define/public (delete-power-up power-up)
       (remove power-up _list-of-power-ups))
     
     (define/public (delete-projectile projectile)
-      (remove projectile _list-of-projectiles ))
+      (remove projectile _list-of-projectiles))
     
     (define/public (delete-asteroid asteroid)
-      (remove asteroid _list-of-asteroids ))
+      (remove asteroid _list-of-asteroids))
 
     (define/public (set-list-of-player lst)
       (set! _list-of-player lst))
@@ -127,7 +127,14 @@
             (send player fireable)
             (send spawn-enemy-timer start 4000)
             (send spawn-power-up-timer start 10000)
-            (send spawn-asteroid-timer start 2000))))))
+            (send spawn-asteroid-timer start 2000))))
+
+    ;Gameover function
+    (define/public (game-over)
+      (unless (send player alive?)
+        (begin
+          (stopping-sound)
+          (send dead-window show #t))))))
 
 ;; canvas-class for the game
 (define game-canvas%
@@ -197,6 +204,8 @@
        (send player move-y (- 0 (send player get-speed)))) 
       ((equal? key-tag  #\s)
        (send player move-y (send player get-speed))) 
+      ((equal? key-tag #\m)
+       (stopping-sound))
       ((equal? key-tag  #\space)
        (when (send player can-fire?)
          (begin
@@ -265,8 +274,10 @@
 
   (for-each (lambda (enemy)
               (when (out-of-bounce? enemy game-board)
-                (send game-board set-list-of-enemies
-                      (send game-board delete-enemy enemy)))
+                (begin
+                  (send player set-health (- (send player get-health) 1))
+                  (send game-board set-list-of-enemies
+                        (send game-board delete-enemy enemy))))
               (when (collision? player enemy)
                 (send player collision-action enemy)
                 (send game-board set-list-of-enemies
@@ -278,7 +289,6 @@
               (when (out-of-bounce? projectile game-board)
                 (send game-board set-list-of-projectiles
                       (send game-board delete-projectile projectile)))
-              
               (when (collision? player projectile)
                 (send player collision-action projectile)
                 (send game-board set-list-of-projectiles
@@ -291,6 +301,7 @@
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
                         (send game-board get-list-of-enemies))
+              
               (for-each (lambda (asteroid) 
                           (when (collision? projectile asteroid)
                             (send game-board set-list-of-asteroids
@@ -298,6 +309,7 @@
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
                         (send game-board get-list-of-asteroids))
+              
               (when (collision? player projectile)
                 (send player collision-action projectile)
                 (send game-board set-list-of-projectiles
@@ -313,7 +325,7 @@
                 
 
 
-;; -------
+;; ------- Initiation of game -------
 
 (define game-board
   (new gameboard%
@@ -343,6 +355,16 @@
                          [label "Play"]))
 
 (send play-button show #t)
+
+(define dead-window (new dialog%
+                         [parent game-window]
+                         [label "Death menu"]))
+
+(define dead-button (new button%
+                             [parent dead-window]
+                             [callback (lambda (button event) (exit))]
+                             [label "You and your dogs are dead (loser), click here for a surprise!"]))
+(send dead-button show #t)
 ;;canvas
 (define canvas (new game-canvas%
                     [parent game-window]
@@ -354,6 +376,7 @@
 ;;Uppdate canvas
 (define (update)
   (check-objects)
+  (send game-board game-over)
   (send canvas refresh))
 
 (define (set-fire)
