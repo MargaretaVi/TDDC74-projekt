@@ -22,7 +22,7 @@
     (set-facing-direction -1)
     (set-speed 30)
     (set-health _health-roof)
-    (set-cool-down 1000)
+    (set-cool-down 500)
     (set-DMG 1)
     (fireable)
 
@@ -121,7 +121,7 @@
 
     (set-health 10)
     (set-DMG 5)
-    (set-speed 2)
+    (set-speed 1)
     ;; boss bitmap
     (define boss-bitmap
       (read-bitmap  "../images/boss.png"))

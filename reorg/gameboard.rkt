@@ -22,7 +22,8 @@
      [_list-of-power-ups '()]
      [_list-of-asteroids '()]
      [_list-of-projectiles '()]
-     [_paused #f])
+     [_paused #f]
+     [_boss-alive #t])
 
     ;; ---- getters -------
     (define/public (get-width)
@@ -61,6 +62,8 @@
     (define/public (get-list-of-asteroids)
       _list-of-asteroids)
 
+    (define/public (boss-alive?)
+      _boss-alive)
     ;;---- setters, add and remove -----
     (define/public (increase-score _scorevalue)
       (set! _score _scorevalue))
@@ -120,6 +123,9 @@
     (define/public (set-list-of-asteroids lst)
       (set! _list-of-asteroids lst))
 
+    (define/public (boss-killed)
+      (set! _boss-alive #f))
+
     ;;Pause function
     (define/public (pause/play)
       (if _paused
@@ -145,7 +151,12 @@
     ;Gameover function
     (define/public (game-over)
       (stopping-sound)
-      (send dead-window show #t))))
+      (send dead-window show #t))
+
+    ;Gameover function
+    (define/public (winning)
+      (stopping-sound)
+      (send win-window show #t))))
 
 ;; canvas-class for the game
 (define game-canvas%
@@ -275,6 +286,13 @@
 
 ;; Creates boss
 (define (spawn-boss)
+  ;Reset gameboard from projectiles, enemies and stops the spawing of them
+  (send game-board set-list-of-projectiles '())
+  (send game-board set-list-of-enemies '())
+  (send game-board set-list-of-asteroids '())
+  (send enemie-shoot-timer stop)
+  (send spawn-asteroid-timer stop)
+  (send spawn-enemy-timer stop)
   (send game-board add-boss (create-obj game-board boss% 'boss)))
 
 ;;check interactions of object 
@@ -341,14 +359,14 @@
               ;; Boss collision
               (for-each (lambda (boss)
                           (when (collision? projectile boss)
-                            #|(if (> (send boss get-health) 1)
+                            (if (> (send boss get-health) 1)
                                 (send boss set-health (- (send boss get-health)
+
                                                          (send projectile get-DMG)))
-                                (send game-board set-list-of-bosses
-                                      (send game-board delete-boss boss)))
-|#
-                            (send game-board set-list-of-bosses
-                                  (send game-board delete-boss boss))
+                                (begin
+                                  (send game-board set-list-of-bosses
+                                        (send game-board delete-boss boss))
+                                  (send game-board boss-killed)))
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
                         (send game-board get-list-of-bosses))
@@ -421,6 +439,18 @@
                            [label "You and your dogs are dead (loser),
  click here for a surprise!"]))
   (send dead-button show #t)
+
+
+  (define win-window (new dialog%
+                           [parent game-window]
+                           [label "Death menu"]))
+
+  (define win-button (new button%
+                           [parent win-window]
+                           [callback (lambda (button event) (exit))]
+                           [label "Congratulations. You won!"]))
+  (send win-button show #t)
+
   ;;canvas
   (define canvas (new game-canvas%
                       [parent game-window]
@@ -434,7 +464,9 @@
     (send canvas refresh)
     (check-objects)
     (unless (send player alive?)
-      (send game-board game-over)))
+      (send game-board game-over))
+    (unless (send game-board boss-alive?)
+      (send game-board winning)))
 
   (define (set-fire)
     (send player fireable))
@@ -449,25 +481,25 @@
 
   ;;Power-up spawn timer
   (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
-  ;(send spawn-power-up-timer start 5000 #f)
+  (send spawn-power-up-timer start 5000 #f)
 
   ;;Asteroid spawn timer
   (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-  ;(send spawn-asteroid-timer start 500 #f)
+  (send spawn-asteroid-timer start 500 #f)
 
   ;Make sure that player cannot spam shoots
   (define player-shoot-timer (new timer% [notify-callback set-fire]))
 
   ;Allows the enemy to shoot
   (define enemie-shoot-timer (new timer% [notify-callback shoot-enemy]))
-  ;(send enemie-shoot-timer start 1000 #f)
+  (send enemie-shoot-timer start 1000 #f)
 
   ;;Allows the boss to shoot
   (define boss-shoot-timer (new timer% [notify-callback shoot-boss]))
-  ;(send boss-shoot-timer start 2000 #f)
+  (send boss-shoot-timer start 2000 #f)
 
   ;;Spawn boss two minutes in the game.
   (define boss-spawn (new timer% [notify-callback spawn-boss]))
   ;Two minutes
-  (send boss-spawn start 5000 #t)
+  (send boss-spawn start 60000 #t)
   
