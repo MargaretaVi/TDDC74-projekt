@@ -16,11 +16,11 @@
      _alive)
     (inherit set-height set-width set-speed set-health
              set-cool-down set-facing-direction set-DMG
-             fireable)
+             fireable get-height)
     
     ; --- starting values
     (set-facing-direction -1)
-    (set-speed 10)
+    (set-speed 30)
     (set-health _health-roof)
     (set-cool-down 1000)
     (set-DMG 1)
@@ -42,7 +42,7 @@
       (send game-board add-projectile
             (new player-projectile%
                  [_x-pos (+ _x-pos (exact-round (/ _width 2)))]
-                 [_y-pos (+ _y-pos _height 3)]
+                 [_y-pos (- _y-pos (- _height 5))]
                  [_facing-direction _facing-direction]
                  [_speed (* _facing-direction (exact-round (* _speed 0.1)))]
                  [_DMG _DMG])))
@@ -81,8 +81,10 @@
      _x-pos _y-pos
      _width _height
      _facing-direction _speed _DMG)
-    (inherit move-x move-y set-height set-width)
-    
+    (inherit move-x move-y set-height set-width set-DMG)
+
+
+    (set-DMG 1)
     ;; Enemie bitmap
     (define enemie-bitmap
       (read-bitmap "../images/enemie.png"))
@@ -118,9 +120,9 @@
     (inherit move-x move-y set-height set-width
              set-health set-DMG set-speed)
 
-    (set-health 50)
+    (set-health 10)
     (set-DMG 5)
-    (set-speed 1)
+    (set-speed 2)
     ;; boss bitmap
     (define boss-bitmap
       (read-bitmap  "../images/boss.png"))
