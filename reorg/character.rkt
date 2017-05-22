@@ -12,11 +12,12 @@
      _x-pos _y-pos
      _width _height
      _health  _health-roof
-     _facing-direction _speed
+     _facing-direction
+     _speed _speed-roof
      _alive _value)
     (inherit set-height set-width set-speed set-health
              set-cool-down set-facing-direction set-DMG
-             fireable get-height) 
+             fireable get-height set-value) 
     
     ; --- starting values
     (set-facing-direction -1)
@@ -57,19 +58,29 @@
              (is-a? object enemy-projectile%))
          (begin
            (set! _health (- _health (send object get-DMG)))
+           (set-value (+ _value (send object get-value)))
            (when (< _health 1)
              (set! _alive #f)))]    
-        [(is-a? object DMG-boost%) (if (> (send this get-DMG) _DMG-roof)
+        [(is-a? object DMG-boost%)
+         (begin
+           (set-value (+ _value (send object get-value)))
+           (if (> (send this get-DMG) _DMG-roof)
                                        (set-DMG _DMG-roof)
                                        (set-DMG (+ (send this get-DMG)
-                                                   (send object get-value))))]
-        [(is-a? object speed-boost%) (set-speed
-                                      (+ _speed (send object get-value)))]
+                                                   (send object get-value)))))]
+        [(is-a? object speed-boost%)
+         (begin
+           (set-value (+ _value (send object get-value)))
+           (if (> _speed _speed-roof)
+               (set-speed _speed-roof)
+               (set-speed (+ _speed (send object get-value)))))]
         [(is-a? object health-boost%)
-         (if (> (send this get-health) _health-roof)
-             (set-health _health-roof)
-             (set-health (+ (send this get-health)
-                         (send object get-value))))]))))
+         (begin
+           (set-value (+ _value (send object get-value)))
+           (if (> _health _health-roof)
+               (set-health _health-roof)
+               (set-health (+ (send this get-health)
+                         (send object get-value)))))]))))
 
 ;; ---- enemie class ----
 (define enemy%
