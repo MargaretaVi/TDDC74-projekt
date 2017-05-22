@@ -13,10 +13,10 @@
      _width _height
      _health  _health-roof
      _facing-direction _speed
-     _alive)
+     _alive _value)
     (inherit set-height set-width set-speed set-health
              set-cool-down set-facing-direction set-DMG
-             fireable get-height)
+             fireable get-height) 
     
     ; --- starting values
     (set-facing-direction -1)
@@ -59,13 +59,12 @@
            (set! _health (- _health (send object get-DMG)))
            (when (< _health 1)
              (set! _alive #f)))]    
-        [(is-a? object DMG-boost%)
-         (if (> (send this get-DMG) _DMG-roof)
-             (set-DMG _DMG-roof)
-             (set-DMG (+ (send this get-DMG)
-                         (send object get-value))))]
-        [(is-a? object speed-boost%)
-         (set-speed (+ _speed (send object get-value)))]
+        [(is-a? object DMG-boost%) (if (> (send this get-DMG) _DMG-roof)
+                                       (set-DMG _DMG-roof)
+                                       (set-DMG (+ (send this get-DMG)
+                                                   (send object get-value))))]
+        [(is-a? object speed-boost%) (set-speed
+                                      (+ _speed (send object get-value)))]
         [(is-a? object health-boost%)
          (if (> (send this get-health) _health-roof)
              (set-health _health-roof)
@@ -137,7 +136,7 @@
     (define/override (fire game-board)
       ;; creates a projectile each and adds to list of projectiles
       (send game-board add-projectile
-            (new enemy-projectile%
+            (new boss-projectile%
                  [_x-pos (+ _x-pos (exact-round (/ _width 2)))]
                  [_y-pos (+ _y-pos _height 3)]
                  [_facing-direction _facing-direction]

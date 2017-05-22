@@ -177,6 +177,10 @@
   ;Display health
   (send dc draw-text (number->string (send player get-health)) 30 30)
   (send dc set-text-foreground "white")
+
+  ;display score
+  (send dc draw-text (number->string (send player get-value))
+        (- (send game-board get-width) 40) 30)
   
   ;;Draw player
   (for-each (lambda (player)
@@ -262,7 +266,6 @@
     (let ((asteroid (create-obj game-board asteroid% 'random)))
       (send game-board add-asteroid asteroid))))
 
-
 ;; Create enemy object and adds it to game board
 (define (spawn-enemy)
   (unless (> (length (send game-board get-list-of-enemies)) 
@@ -270,6 +273,7 @@
     (let ((enemy (create-obj game-board enemy% 'random)))
       (send game-board add-enemy enemy))))
 
+;; Creates boss
 (define (spawn-boss)
   (send game-board add-boss (create-obj game-board boss% 'boss)))
 
@@ -311,6 +315,12 @@
                       (send game-board delete-enemy enemy))))
             (send game-board get-list-of-enemies))
 
+  (for-each (lambda (boss)
+              (when (or (out-of-bounce? boss game-board)
+                        (collision? player boss))
+                (send game-board game-over)))
+            (send game-board get-list-of-bosses))
+
   (for-each (lambda (projectile)
               ;; Delete projectile when off screen
               (when (out-of-bounce? projectile game-board)
@@ -320,7 +330,7 @@
                 (send player collision-action projectile)
                 (send game-board set-list-of-projectiles
                       (send game-board delete-projectile projectile)))
-              ;; collide with enemy?
+              ;; Enemy collision
               (for-each (lambda (enemy)
                           (when (collision? projectile enemy)
                             (send game-board set-list-of-enemies
@@ -328,126 +338,136 @@
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
                         (send game-board get-list-of-enemies))
-
+              ;; Boss collision
               (for-each (lambda (boss)
                           (when (collision? projectile boss)
-                            (if (> (send boss get-health) 1)
+                            #|(if (> (send boss get-health) 1)
                                 (send boss set-health (- (send boss get-health)
                                                          (send projectile get-DMG)))
                                 (send game-board set-list-of-bosses
                                       (send game-board delete-boss boss)))
+|#
+                            (send game-board set-list-of-bosses
+                                  (send game-board delete-boss boss))
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
-                        (send game-board get-list-of-enemies))
-              
+                        (send game-board get-list-of-bosses))
+              ;; Asteroid collision
               (for-each (lambda (asteroid) 
                           (when (collision? projectile asteroid)
                             (send game-board set-list-of-asteroids
                                   (send game-board delete-asteroid asteroid))
                             (send game-board set-list-of-projectiles
                                   (send game-board delete-projectile projectile))))
-                          (send game-board get-list-of-asteroids)))
-            (send game-board get-list-of-projectiles))
+                        (send game-board get-list-of-asteroids)))
+            (send game-board get-list-of-projectiles)))
 
-  (for-each (lambda (boss)
-              (when (or (out-of-bounce? boss game-board)
-                        (collision? player boss))
-                (send game-board game-over)))
-            (send game-board get-list-of-bosses)))
 
-;; Random if enemie should shoot
-(define (shoot-enemy)
-  (for-each (lambda (enemy)
-              (when (equal? (random 5) 1)
-                (send enemy fire game-board))) 
-            (send game-board get-list-of-enemies)))
+
+  ;; Random if enemie should shoot
+  (define (shoot-enemy)
+    (for-each (lambda (enemy)
+                (when (equal? (random 5) 1)
+                  (send enemy fire game-board))) 
+              (send game-board get-list-of-enemies)))
+
+  ;; Boss shoots
+  (define (shoot-boss)
+    (for-each (lambda (boss)
+                (send boss fire game-board))
+              (send game-board get-list-of-bosses)))
                 
 
+  ;; ------- Initiation of game -------
 
-;; ------- Initiation of game -------
-
-(define game-board
-  (new gameboard%
-       [_width 900]
-       [_height 700]
-       [_num-of-power-ups 5]
-       [_num-of-enemies 7]
-       [_num-of-asteroids 15]))
+  (define game-board
+    (new gameboard%
+         [_width 900]
+         [_height 700]
+         [_num-of-power-ups 5]
+         [_num-of-enemies 7]
+         [_num-of-asteroids 15]))
 
 
-(define player (create-obj game-board player% 'player))
-(send game-board add-player player)
+  (define player (create-obj game-board player% 'player))
+  (send game-board add-player player)
 
-(define game-window (new frame%
-                         [width 900]
-                         [height 700]
-                         [label "Space invader"]))
+  (define game-window (new frame%
+                           [width 900]
+                           [height 700]
+                           [label "Space invader"]))
                              
-(send game-window show #t)
+  (send game-window show #t)
 
-
-(define pause-window (new dialog%
-                          [parent game-window]
-                          [label "Pause menu"]))
+  (define pause-window (new dialog%
+                            [parent game-window]
+                            [label "Pause menu"]))
   
-(define play-button (new button%
-                         [parent pause-window]
-                         [callback (lambda (button event)
-                                     (send game-board pause/play))]
-                         [label "Play"]))
+  (define play-button (new button%
+                           [parent pause-window]
+                           [callback (lambda (button event)
+                                       (send game-board pause/play))]
+                           [label "Play"]))
 
-(send play-button show #t)
+  (send play-button show #t)
 
-(define dead-window (new dialog%
-                         [parent game-window]
-                         [label "Death menu"]))
+  (define dead-window (new dialog%
+                           [parent game-window]
+                           [label "Death menu"]))
 
-(define dead-button (new button%
-                         [parent dead-window]
-                         [callback (lambda (button event) (exit))]
-                         [label "You and your dogs are dead (loser),
+  (define dead-button (new button%
+                           [parent dead-window]
+                           [callback (lambda (button event) (exit))]
+                           [label "You and your dogs are dead (loser),
  click here for a surprise!"]))
-(send dead-button show #t)
-;;canvas
-(define canvas (new game-canvas%
-                    [parent game-window]
-                    [keyboard-handler keyboard-input]
-                    [paint-callback render-function]))
+  (send dead-button show #t)
+  ;;canvas
+  (define canvas (new game-canvas%
+                      [parent game-window]
+                      [keyboard-handler keyboard-input]
+                      [paint-callback render-function]))
 
-(send canvas show #t)
+  (send canvas show #t)
 
-;;Uppdate canvas
-(define (update)
-  (send canvas refresh)
-  (check-objects)
-  (unless (send player alive?)
-    (send game-board game-over)))
+  ;;Uppdate canvas
+  (define (update)
+    (send canvas refresh)
+    (check-objects)
+    (unless (send player alive?)
+      (send game-board game-over)))
 
-(define (set-fire)
-  (send player fireable))
+  (define (set-fire)
+    (send player fireable))
 
-;;Update canvas timer
-(define update-timer (new timer% [notify-callback update]))                         
-(send update-timer start 16 #f)
+  ;;Update canvas timer
+  (define update-timer (new timer% [notify-callback update]))                         
+  (send update-timer start 16 #f)
 
-;;Enemy spawn timer
-(define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
-(send spawn-enemy-timer start 700 #f)
+  ;;Enemy spawn timer
+  (define spawn-enemy-timer (new timer% [notify-callback spawn-enemy]))
+  (send spawn-enemy-timer start 700 #f)
 
-;;power-up spawn timer
-(define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
-(send spawn-power-up-timer start 5000 #f)
+  ;;Power-up spawn timer
+  (define spawn-power-up-timer (new timer% [notify-callback spawn-power-up]))
+  ;(send spawn-power-up-timer start 5000 #f)
 
-;;asteroid spawn timer
-(define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
-(send spawn-asteroid-timer start 500 #f)
+  ;;Asteroid spawn timer
+  (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
+  ;(send spawn-asteroid-timer start 500 #f)
 
-;Make sure that player cannot spam shoots
-(define player-shoot-timer (new timer% [notify-callback set-fire]))
+  ;Make sure that player cannot spam shoots
+  (define player-shoot-timer (new timer% [notify-callback set-fire]))
 
-(define enemie-shoot-timer (new timer% [notify-callback shoot-enemy]))
-(send enemie-shoot-timer start 1000 #f)
+  ;Allows the enemy to shoot
+  (define enemie-shoot-timer (new timer% [notify-callback shoot-enemy]))
+  ;(send enemie-shoot-timer start 1000 #f)
 
-(define boss-spawn (new timer% [notify-callback spawn-boss]))
-;Two minutes
-(send boss-spawn start 5000 #t)
+  ;;Allows the boss to shoot
+  (define boss-shoot-timer (new timer% [notify-callback shoot-boss]))
+  ;(send boss-shoot-timer start 2000 #f)
+
+  ;;Spawn boss two minutes in the game.
+  (define boss-spawn (new timer% [notify-callback spawn-boss]))
+  ;Two minutes
+  (send boss-spawn start 5000 #t)
+  
