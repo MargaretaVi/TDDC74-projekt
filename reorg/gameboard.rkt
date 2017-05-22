@@ -23,6 +23,7 @@
      [_list-of-asteroids '()]
      [_list-of-projectiles '()]
      [_paused #f]
+     [_sound #f]
      [_boss-alive #t])
 
     ;; ---- getters -------
@@ -64,6 +65,9 @@
 
     (define/public (boss-alive?)
       _boss-alive)
+
+    (define/public (get-sound)
+      _sound)
     ;;---- setters, add and remove -----
     (define/public (increase-score _scorevalue)
       (set! _score _scorevalue))
@@ -125,6 +129,9 @@
 
     (define/public (boss-killed)
       (set! _boss-alive #f))
+
+    (define/public (set-sound _val)
+      (set! _sound _val))
 
     ;;Pause function
     (define/public (pause/play)
@@ -245,7 +252,7 @@
       ((equal? key-tag  #\s)
        (send player move-y (send player get-speed))) 
       ((equal? key-tag #\m)
-       (stopping-sound))
+       (sound-on/sound-off))
       ((equal? key-tag  #\space)
        (when (send player can-fire?)
          (begin
@@ -256,6 +263,11 @@
       ((equal? key-tag #\p)
        (send game-board pause/play)))))
 
+(define (sound-on/sound-off)
+  (send game-board set-sound (not (send game-board get-sound)))
+  (if (send game-board get-sound)
+      (playing-sound background)
+      (stopping-sound)))
 
 ;; Create power-up object and adds it to game board
 (define (spawn-power-up)
