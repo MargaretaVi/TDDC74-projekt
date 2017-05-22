@@ -20,10 +20,10 @@
     
     ; --- starting values
     (set-facing-direction -1)
-    (set-speed 20)
+    (set-speed 10)
     (set-health _health-roof)
     (set-cool-down 1000)
-    (set-DMG 5)
+    (set-DMG 1)
     (fireable)
 
     ;; player bitmap
@@ -56,7 +56,7 @@
              (is-a? object boss-projectile%)
              (is-a? object enemy-projectile%))
          (begin
-           (set! _health (- _health 1))
+           (set! _health (- _health (send object get-DMG)))
            (when (< _health 1)
              (set! _alive #f)))]    
         [(is-a? object DMG-boost%)
@@ -72,8 +72,7 @@
              (set-health (+ (send this get-health)
                          (send object get-value))))]))))
 
-
-
+;; ---- enemie class ----
 (define enemy%
   (class game-object%
     (super-new)
@@ -105,6 +104,8 @@
                  [_speed (+ _speed 1)]
                  [_DMG _DMG])))))
 
+
+;; ---- boss class ----
 (define boss%
   (class game-object%
     (super-new)
@@ -114,7 +115,12 @@
      _width _height
      _facing-direction _speed _DMG)
 
-    (inherit move-x move-y set-height set-width)
+    (inherit move-x move-y set-height set-width
+             set-health set-DMG set-speed)
+
+    (set-health 50)
+    (set-DMG 5)
+    (set-speed 1)
     ;; boss bitmap
     (define boss-bitmap
       (read-bitmap  "../images/boss.png"))

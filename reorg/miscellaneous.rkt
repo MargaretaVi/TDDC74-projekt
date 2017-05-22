@@ -59,14 +59,21 @@
 ;; Creates a new object from input class
 (define (create-obj game-board class specification)
   (let ((new-obj (new class)))
-    (if (equal? specification 'middle)
-        (begin
-          (send new-obj set-x-pos
-                (- (exact-round (/ (send game-board get-width) 2)) 30))
-          (send new-obj set-y-pos (- (send game-board get-height) 80)))
+    (cond
+      ((equal? specification 'player)
+       (begin
+         (send new-obj set-x-pos
+               (- (exact-round (/ (send game-board get-width) 2)) 30))
+         (send new-obj set-y-pos (- (send game-board get-height) 80))))
+      ((equal? specification 'random)
         (begin
           (send new-obj set-x-pos (random-x-pos game-board new-obj))
           (send new-obj set-y-pos (random-y-pos game-board))))
+      ((equal? specification 'boss)
+       (begin
+        (send new-obj set-x-pos
+               (- (exact-round (/ (send game-board get-width) 2)) 30))
+         (send new-obj set-y-pos 0))))
     (send new-obj set-width (send (send new-obj get-bitmap) get-width))
     (send new-obj set-height (send (send new-obj get-bitmap) get-height))
     new-obj))

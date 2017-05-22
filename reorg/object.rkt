@@ -16,8 +16,8 @@
      [_alive #t]
      [_can-fire #f]
      [_cool-down 0]
-     [_health-roof 10]
-     [_speed-roof 10]
+     [_health-roof 20]
+     [_speed-roof 20]
      [_DMG-roof 10] ; Check so that the same value is in item.rkt player projectile
      [_value 0])
      ;; ----- Getters --------   
@@ -76,6 +76,9 @@
 
     (define/public (set-health _val)
       (set! _health _val))
+
+    (define/public (not-alive)
+      (set! _alive #f))
     
     (define/public (set-x-pos _pos)
       (set! _x-pos _pos))

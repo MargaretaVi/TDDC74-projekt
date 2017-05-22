@@ -52,7 +52,7 @@
 
     (define/override (get-bitmap)
       DMG-bitmap)
-    (set-value 5)))
+    (set-value 2)))
 
 
 ;; --- Projectiles -------
