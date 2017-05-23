@@ -15,7 +15,6 @@
      [_num-of-power-ups 5]
      [_num-of-enemies 10]
      [_num-of-asteroids 10]; allowed num of power up at one instance
-     [_score 0]
      [_list-of-player '()]
      [_list-of-enemies '()]
      [_list-of-bosses '()]
@@ -32,10 +31,7 @@
 
     (define/public (get-height)
       _height)
-
-    (define/public (get-score)
-      _score)
-
+    
     (define/public (get-num-of-power-ups)
       _num-of-power-ups)
     
@@ -69,9 +65,7 @@
     (define/public (get-sound)
       _sound)
     ;;---- setters, add and remove -----
-    (define/public (increase-score _scorevalue)
-      (set! _score _scorevalue))
-    
+   
     (define/public (add-player player)
       (set! _list-of-player (append (list player) _list-of-player)))
     
