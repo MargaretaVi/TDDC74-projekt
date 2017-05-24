@@ -12,9 +12,9 @@
     (init-field
      _width
      _height
-     [_num-of-power-ups 5]
-     [_num-of-enemies 10]
-     [_num-of-asteroids 10]; allowed num of power up at one instance
+     [_num-of-power-ups 5] ; allowed number of power-ups at one instance
+     [_num-of-enemies 10] ;allowed number of enemies at one instance
+     [_num-of-asteroids 10] ;allowed number of asteroids at one instance
      [_list-of-player '()]
      [_list-of-enemies '()]
      [_list-of-bosses '()]
@@ -154,7 +154,7 @@
       (stopping-sound)
       (send dead-window show #t))
 
-    ;Gameover function
+    ;Winning function
     (define/public (winning)
       (stopping-sound)
       (send win-window show #t))))
@@ -166,6 +166,7 @@
      keyboard-handler)
     (inherit get-dc)
 
+    ;; Out own keyboard handler
     (define/override (on-char key-event)
       (keyboard-handler key-event))
     
@@ -173,7 +174,8 @@
     (define/public (draw-object object dc)
       (send dc draw-bitmap (send object get-bitmap)
             (send object get-x-pos) (send object get-y-pos)))
-    
+
+    ;; Makes a black background
     (define/override (on-paint)
       (let ([background-dc (get-dc)])
         (send background-dc set-background "black")
@@ -191,12 +193,12 @@
   (send dc draw-text (number->string (send player get-health)) 30 30)
   (send dc set-text-foreground "white")
 
-  ;display score
+  ;Display score
   (send dc draw-text "Score" (- (send game-board get-width) 70) 15)
   (send dc draw-text (number->string (send player get-value))
         (- (send game-board get-width) 70) 30)
   
-  ;;Draw player
+  ;;Draw player(s)
   (for-each (lambda (player)
               (send canvas draw-object player dc))
             (send game-board get-list-of-player))
@@ -219,13 +221,13 @@
               (send canvas draw-object object dc))
             (send  game-board  get-list-of-power-ups))
 
-  ;;draw asteroids
+  ;;Draw asteroids
   (for-each (lambda (asteroid)
               (send asteroid update)
               (send canvas draw-object asteroid dc))
             (send game-board get-list-of-asteroids))
 
-  ;;draw bosses
+  ;;Draw boss(es)
   (for-each (lambda (boss)
               (send boss update)
               (send canvas draw-object boss dc))
@@ -257,6 +259,7 @@
       ((equal? key-tag #\p)
        (send game-board pause/play)))))
 
+;; Starts/stops the sound
 (define (sound-on/sound-off)
   (send game-board set-sound (not (send game-board get-sound)))
   (if (send game-board get-sound)
@@ -278,7 +281,7 @@
                                 (create-obj game-board DMG-boost% 'random))))
       (send game-board add-power-up power-up))))
 
-;; Create power-up object and adds it to game board
+;; Create asteroid object and adds it to game board
 (define (spawn-asteroid)
   (unless (> (length (send game-board get-list-of-asteroids)) 
              (send game-board get-num-of-asteroids))
@@ -294,7 +297,8 @@
 
 ;; Creates boss
 (define (spawn-boss)
-  ;Reset gameboard from projectiles, enemies and stops the spawing of them
+  
+  ;;Clear gameboard from projectiles, enemies and stops the spawing of them
   (send game-board set-list-of-projectiles '())
   (send game-board set-list-of-enemies '())
   (send game-board set-list-of-asteroids '())
@@ -307,7 +311,9 @@
 (define (check-objects)
   ;; Makes sure that player do not walk outside of game-board
   (prevent-walkning-outside player game-board)
-      
+
+  ;; Check if it's outside of gameboard & collision
+  ;; of each power up against the player
   (for-each (lambda (power-up)
               (when (out-of-bounce? power-up game-board)
                 (send game-board set-list-of-power-ups
@@ -318,6 +324,8 @@
                       (send game-board delete-power-up power-up))))
             (send game-board get-list-of-power-ups))
 
+  ;; Check if it's outside of gameboard & collision
+  ;; of each asteroid against the player
   (for-each (lambda (asteroid)
               (when (out-of-bounce? asteroid game-board)
                 (send game-board set-list-of-asteroids
@@ -328,6 +336,8 @@
                       (send game-board delete-asteroid asteroid))))
             (send game-board get-list-of-asteroids))
 
+  ;; Check if it's outside of gameboard & collision
+  ;; of each enemy against the player
   (for-each (lambda (enemy)
               (when (out-of-bounce? enemy game-board)
                 (begin
@@ -340,13 +350,17 @@
                 (send game-board set-list-of-enemies
                       (send game-board delete-enemy enemy))))
             (send game-board get-list-of-enemies))
-
+  
+  ;; Check if it's outside of gameboard & collision
+  ;; of each boss against the player
   (for-each (lambda (boss)
               (when (or (out-of-bounce? boss game-board)
                         (collision? player boss))
                 (send game-board game-over)))
             (send game-board get-list-of-bosses))
 
+  ;; Check if it's outside of gameboard & collision
+  ;; of each projectile against the player
   (for-each (lambda (projectile)
               ;; Delete projectile when off screen
               (when (out-of-bounce? projectile game-board)
@@ -499,10 +513,10 @@
   (define spawn-asteroid-timer (new timer% [notify-callback spawn-asteroid]))
   (send spawn-asteroid-timer start 1000 #f)
 
-  ;Make sure that player cannot spam shoots
+  ;;Make sure that player cannot spam shoots
   (define player-shoot-timer (new timer% [notify-callback set-fire]))
 
-  ;Allows the enemy to shoot
+  ;;Allows the enemy to shoot
   (define enemie-shoot-timer (new timer% [notify-callback shoot-enemy]))
   (send enemie-shoot-timer start 1000 #f)
 
@@ -510,8 +524,7 @@
   (define boss-shoot-timer (new timer% [notify-callback shoot-boss]))
   (send boss-shoot-timer start 2000 #f)
 
-  ;;Spawn boss two minutes in the game.
+  ;;Spawn boss one minutes in the game.
   (define boss-spawn (new timer% [notify-callback spawn-boss]))
-  ;Two minutes
   (send boss-spawn start 60000 #t)
   
